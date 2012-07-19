@@ -27,12 +27,12 @@
 
 		$("#getStatusBtn").click(function(){
 			//var url = "https://www.facebook.com/dialog/oauth?client_id=172468146218420&redirect_uri=http://localhost/index.php?response=facebook&scope=email,user_birthday,status_update,publish_stream&response_type=token";
-			var url = "https://www.facebook.com/dialog/oauth?client_id=172468146218420&redirect_uri=<?=$facebook_url?>&scope=user_birthday,status_update,read_stream,offline_access&state=authenticated";
+			var url = "https://www.facebook.com/dialog/oauth?client_id=172468146218420&redirect_uri=<?php echo$facebook_url?>&scope=user_birthday,status_update,read_stream,offline_access&state=authenticated";
 			window.location = url;
 		});
 
 		if (($("#fbCode").val() != "") && ($("#fbToken").val() == "")){
-			var url = "https://graph.facebook.com/oauth/access_token?client_id=172468146218420&redirect_uri=<?=$facebook_url?>&client_secret="+ appsecret+"&code="+$("#fbCode").val();
+			var url = "https://graph.facebook.com/oauth/access_token?client_id=172468146218420&redirect_uri=<?php echo$facebook_url?>&client_secret="+ appsecret+"&code="+$("#fbCode").val();
 			$.post(url, null, function(resultData) {
 		 		splitString = resultData.split("=");
 		 		$("#fbToken").val(splitString[1]);
@@ -120,7 +120,7 @@
 
 	function loginToFacebook(){
 		showLoading(true);
-		var url = "https://www.facebook.com/dialog/oauth?client_id=172468146218420&redirect_uri=<?=$facebook_url?>&scope=user_birthday,status_update,read_stream,offline_access&state=authenticated";
+		var url = "https://www.facebook.com/dialog/oauth?client_id=172468146218420&redirect_uri=<?php echo$facebook_url?>&scope=user_birthday,status_update,read_stream,offline_access&state=authenticated";
 		window.location = url;
 	}
   
@@ -151,7 +151,7 @@
 						
 		</div>
 	</div>
-	<? }?>
+	<?php }?>
 
 	
 	<?
@@ -188,14 +188,14 @@
 	?>
 			
 			<script type="text/javascript">
-			$("#chosenDate").val("<?=$chosenDate?>");
-			$("#diplayDateInput").val("<?=$diplayDate?>");
+			$("#chosenDate").val("<?php echo$chosenDate?>");
+			$("#diplayDateInput").val("<?php echo$diplayDate?>");
 			</script>
 			
 			<div class="formlabel">
-			 <div style="font-size: 1.1em; text-align: left;">"<?= $statusUpdate->message ?>"</div><br/>
-			 <div style="font-size: 0.8em; text-align: right;"><?= date("g:i a", strtotime($statusUpdate->theDate)) ?></div>
+			 <div style="font-size: 1.1em; text-align: left;">"<?php echo $statusUpdate->message ?>"</div><br/>
+			 <div style="font-size: 0.8em; text-align: right;"><?php echo date("g:i a", strtotime($statusUpdate->theDate)) ?></div>
 			</div>
 			
-		<? }?>
+		<?php }?>
 

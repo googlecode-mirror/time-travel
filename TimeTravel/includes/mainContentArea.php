@@ -337,15 +337,15 @@ $(function() {
 				<div class="showcase-slide">
 					<!-- Put the slide content in a div with the class .showcase-content. -->
 					<div class="showcase-content">
-						<input id="pictureId" type="hidden" value="<?=$picture->id ?>"/>
-						<input id="pictureSrc" type="hidden" value="<?=$pictureSrc?>"/>
-						<a id="<?=$picture->id ?>" href="#" onclick="showPicture(this);"><img id="<?=$picture->id ?>" src="/images/loading.gif" width="60" style="position: relative; top: 120px;"/></a>
+						<input id="pictureId" type="hidden" value="<?php echo$picture->id ?>"/>
+						<input id="pictureSrc" type="hidden" value="<?php echo$pictureSrc?>"/>
+						<a id="<?php echo$picture->id ?>" href="#" onclick="showPicture(this);"><img id="<?php echo$picture->id ?>" src="/images/loading.gif" width="60" style="position: relative; top: 120px;"/></a>
 					</div>
 					<!-- Put the caption content in a div with the class .showcase-caption -->
 					<div class="showcase-caption">
-						<div class="picDescription" style="float: left"><?= ($picture->description == "" ? "" : "\"") ?><?= $picture->description ?><?= ($picture->description == "" ? "" : "\"") ?></div>
+						<div class="picDescription" style="float: left"><?php echo ($picture->description == "" ? "" : "\"") ?><?php echo $picture->description ?><?php echo ($picture->description == "" ? "" : "\"") ?></div>
 						
-						<div style="font-size: 0.7em; text-align: right; float: right;"><?= date("Y F j l g:i a", strtotime($picture->timetaken))?></div>
+						<div style="font-size: 0.7em; text-align: right; float: right;"><?php echo date("Y F j l g:i a", strtotime($picture->timetaken))?></div>
 					</div>
 				</div>
 		
@@ -373,25 +373,25 @@ $(function() {
 		?>
 		
 		<script type="text/javascript">
-				$("#chosenDate").val("<?=$chosenDate?>");
-				$("#diplayDateInput").val("<?=$diplayDate?>");
+				$("#chosenDate").val("<?php echo$chosenDate?>");
+				$("#diplayDateInput").val("<?php echo$diplayDate?>");
 		</script>
 		
 		 
-		<div class="formlabel" style="display: <?=$picturesFound? "none" : "block"; ?>;">No Pictures taken on this day.</div>
+		<div class="formlabel" style="display: <?php echo$picturesFound? "none" : "block"; ?>;">No Pictures taken on this day.</div>
 		
 
 		
-		<div style="position: relative; left: 0px; background-image:  url(../images/ui-bg_highlight-soft_100_eeeeee_1x100.png) 50% top repeat-x; width:100%; background-color: #EEE; display: <?=$picturesFound? "block" : "none"; ?>;">
+		<div style="position: relative; left: 0px; background-image:  url(../images/ui-bg_highlight-soft_100_eeeeee_1x100.png) 50% top repeat-x; width:100%; background-color: #EEE; display: <?php echo$picturesFound? "block" : "none"; ?>;">
 			<a href="#" onclick="callPictureRotate('left');">Rotate Left</a>&nbsp;&nbsp;
 			<a href="#" onclick="callPictureRotate('right');">Rotate Right</a>&nbsp;&nbsp;
 			<a href="#" onclick="showCaptionOverlay();">Edit Description</a>&nbsp;&nbsp;
 			<a href="#" onclick="showDateTakenOverlay();">Edit Picture Date</a>
 		</div>
 		<br/><br/>
-		<div class="formlabel" style="display: <?=$statusUpdateFound? "block" : "none"; ?>;">
-			 <div style="font-size: 1.1em; text-align: left;">"<?= $statusUpdate->message ?>"</div><br/>
-			 <div style="font-size: 0.8em; text-align: right;"><?= $statusUpdateTime ?></div>
+		<div class="formlabel" style="display: <?php echo$statusUpdateFound? "block" : "none"; ?>;">
+			 <div style="font-size: 1.1em; text-align: left;">"<?php echo $statusUpdate->message ?>"</div><br/>
+			 <div style="font-size: 0.8em; text-align: right;"><?php echo $statusUpdateTime ?></div>
 		</div>
 	</div>
 	

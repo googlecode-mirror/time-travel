@@ -58,11 +58,11 @@ A:hover {text-decoration: underline;}
  	$diplayDate = $_SESSION['diplayDate'];
  
  ?>
- <input id="chosenDate" type="hidden" value="<?=$chosenDate?>"/>
- <input id="diplayDateInput" type="hidden" value="<?=$diplayDate?>"/>
- <input id="mainContentType" type="hidden" value="<?=$mainContentType?>"/>
- <input id="fbToken" type="hidden" value="<?=$facebookAccessToken?>"/>
- <input id="fbCode" type="hidden" value="<?=$facebookCode?>"/>
+ <input id="chosenDate" type="hidden" value="<?php echo$chosenDate?>"/>
+ <input id="diplayDateInput" type="hidden" value="<?php echo$diplayDate?>"/>
+ <input id="mainContentType" type="hidden" value="<?php echo$mainContentType?>"/>
+ <input id="fbToken" type="hidden" value="<?php echo$facebookAccessToken?>"/>
+ <input id="fbCode" type="hidden" value="<?php echo$facebookCode?>"/>
  
  <div id="loadingPic" style="display: none; position:absolute; left: 0px; top:0px; height:100%; width: 100%; text-align: center;
            background-image:url('images/translucent.gif'); z-index: 1000;">
@@ -70,7 +70,7 @@ A:hover {text-decoration: underline;}
 </div>
 
 <div id="globalContaier" style="width: 100%; position: absolute; top: 40px;" align="center">
-		<div id="loggedInContentAread" style="width: 850px; display: <?=$loggedIn? "block" : "none" ?>;">
+		<div id="loggedInContentAread" style="width: 850px; display: <?php echo$loggedIn? "block" : "none" ?>;">
 			<div id="addInfoDiv" style="float: left; text-align: right;">
 				<div style="font-size: 0.9em; color: #999; font-weight: bold; margin-top: 12px; padding-right: 15px;"><a href="index.php?response=pictures">PICTURES</a></div>
 				<div style="font-size: 0.9em; color: #999; font-weight: bold; margin-top: 12px; padding-right: 15px;"><a href="index.php?response=facebook" >STATUS UPDATES</a></div>
@@ -88,7 +88,7 @@ A:hover {text-decoration: underline;}
 		</div>
 		
 		
-		<div id="loggedInContentAread" style="width: 850px; display: <?=$loggedIn? "none" : "block" ?>;">
+		<div id="loggedInContentAread" style="width: 850px; display: <?php echo$loggedIn? "none" : "block" ?>;">
 			<br/><br/><br/><br/>
 			<div class="formlabel" height="400px">
 				Welcome to Time Travel! If you don't have an account you might wanna signup to start travelling through time in your lifetime. Or, if you 

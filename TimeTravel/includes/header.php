@@ -2,32 +2,28 @@
 	<tr>
 		<td></td>
 		<td align="center" width="40%">
-			<div style="font-size: 1em; color: white; font-style: italic; float: left; display: <?= $loggedIn ? 'block' : 'none'?>;"><?=$name?>, enjoy your time travel!</div>
+			<div style="font-size: 1em; color: white; font-style: italic; float: left; display: <?php echo $loggedIn ? 'block' : 'none'?>;"><?php echo $name?>, enjoy your time travel!</div>
 			
 			<div style="color: white; font-size: 1.6em; font-weight: bold; font-family: verdana;">Time Travel<div>
 			
 		</td>
 		<td width="15%" align="center">
 		
-		<script type="text/javascript">
-
-				alert(<?=$_SESSION['name']?>);
-		</script>
-		<?
-			if (($_SESSION['name']) != null) {
+		<?php
+			if (!($_SESSION['name']) != null) {
 		?>
 			<a id="loginUrl" href="#" class="header" onclick="showLoginDlg();"><img src="images/login.png" border="0"/>Login</a>
-		<?  } else { ?>
+		<?php  } else { ?>
 
 			<a id="logoutUrl" href="#" class="header" onclick="logoutUser(fbUserLogout);"><img src="images/logout.png" border="0"/>Logout
 			</a>
-		<? } ?>
+		<?php } ?>
 		
 		
 		
 		</td>
 		<td width="15%"  align="center">	
-			<a href="#" class="header" onclick="showSignUp();" style="display: <?= $loggedIn ? 'none' : 'block'?>;"><img src="images/signup.png" border="0"/>Sign up</a>
+			<a href="#" class="header" onclick="showSignUp();" style="display: <?php echo $loggedIn ? 'none' : 'block'?>;"><img src="images/signup.png" border="0"/>Sign up</a>
 		</td>
 		<td ></td>
 	</tr>

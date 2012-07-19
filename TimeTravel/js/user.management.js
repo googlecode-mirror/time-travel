@@ -174,6 +174,8 @@ var loginUser = function userLogin(redirectUrl) {
 
 	$.post(url, parms, function(resultData) {
 		resultData = parseResult(resultData);
+		alert(resultData);
+		return;
 		var errorCode = $(resultData).find("code").text();
 		if (errorCode == 0) {
 			$("#loginUrl").hide();
