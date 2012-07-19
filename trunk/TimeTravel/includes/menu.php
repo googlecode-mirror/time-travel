@@ -5,9 +5,9 @@
 			<li><a href="#" style="font: 12px Verdana, Arial, Helvetica, sans-serif; color: #4F6B72; padding-top: 2px;">Lifts</a></li>
 			<li><a href="#" style="font: 12px Verdana, Arial, Helvetica, sans-serif; color: #4F6B72; padding-top: 2px;">Accommodation</a></li>
 			
-			<? if (isset($_SESSION['name'])) {	?>
+			<?php if (isset($_SESSION['name'])) {	?>
 				<li><a href="myaccount.php" style="font: 12px Verdana, Arial, Helvetica, sans-serif; color: #4F6B72; padding-top: 2px;">My Profile</a></li>
-			<?  }  ?>
+			<?php  }  ?>
 			
 					
 			<li><a href="#" style="font: 12px Verdana, Arial, Helvetica, sans-serif; color: #4F6B72; padding-top: 2px;">FAQ</a></li>

@@ -1,4 +1,4 @@
-<?
+<?php
 	require_once(dirname(dirname(__FILE__)) . '/dao/DayDAO.php');
 	require_once(dirname(dirname(__FILE__)) . '/includes/user.session.initializer.php');
 	date_default_timezone_set('Africa/Johannesburg');
@@ -53,9 +53,9 @@
 	error_log($earliestYear."  AND ".$currentYear);
 ?>
 <select id="year" class="selectInput" style="font-size: 1.3em; color: #C0C0C0;">
-	<? for ($i = $currentYear; $i >= $earliestYear; $i--) { ?>
-		<option value="<?=$i?>"><?=$i?></option>
-	<? }?>
+	<?php for ($i = $currentYear; $i >= $earliestYear; $i--) { ?>
+		<option value="<?php echo$i?>"><?php echo$i?></option>
+	<?php }?>
 </select >
 <select id="month" class="selectInput" style="font-size: 1.3em; color: #C0C0C0;">
 	<option value="01">January</option>

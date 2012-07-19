@@ -142,7 +142,7 @@
                     ',top=' + top
                   );
  
-            newwindow=window.open('<?=$loginUrl?>','Login_by_facebook',features);
+            newwindow=window.open('<?php echo$loginUrl?>','Login_by_facebook',features);
  
            if (window.focus) {newwindow.focus()}
           return false;
@@ -157,7 +157,7 @@
     <?php } ?>
     <p>
         <?php if ($fbme) { ?>
-            <a href="<?=$logoutUrl?>">
+            <a href="<?php echo$logoutUrl?>">
               <img src="http://static.ak.fbcdn.net/rsrc.php/z2Y31/hash/cxrz4k7j.gif" border="0">
             </a>
         <?php } else{ ?>
@@ -202,7 +202,7 @@
         </tr>
     </table>
     <div class="box">
-        <form name="" action="<?=$config['baseurl']?>" method="post">
+        <form name="" action="<?php echo$config['baseurl']?>" method="post">
             <label for="tt">Status update using Graph API</label>
             <br />
             <textarea id="tt" name="tt" cols="50" rows="5">Write your status here and click 'Update My Status'</textarea>
@@ -211,7 +211,7 @@
         </form>
         <?php if (isset($statusUpdate)) { ?>
             <br />
-            <b style="color: red">Status Updated Successfully! Status id is <?=$statusUpdate['id']?></b>
+            <b style="color: red">Status Updated Successfully! Status id is <?php echo$statusUpdate['id']?></b>
          <?php } ?>
     </div>
     <?php } ?>
