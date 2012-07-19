@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<controller>
+	<action>
+		<name>moveUserPictures</name>
+		<service-class-name>BusinessLogic</service-class-name>
+		<postlogon>true</postlogon>
+		<expected-params>
+		</expected-params>
+	</action>
+	<action>
+		<name>saveTokenToSession</name>
+		<service-class-name>BusinessLogic</service-class-name>
+		<postlogon>true</postlogon>
+		<expected-params>
+			<param required="true">access_token</param>
+		</expected-params>
+	</action>
+	<action>
+		<name>updatePictureCaption</name>
+		<service-class-name>BusinessLogic</service-class-name>
+		<postlogon>true</postlogon>
+		<expected-params>
+			<param required="true">pictureId</param>
+			<param required="false">caption</param>
+			<param required="false">dateandtime</param>
+		</expected-params>
+	</action>
+	<action>
+		<name>rotatePicture</name>
+		<service-class-name>BusinessLogic</service-class-name>
+		<postlogon>true</postlogon>
+		<expected-params>
+			<param required="true">pictureId</param>
+			<param required="true">direction</param>
+		</expected-params>
+	</action>
+	<action>
+		<name>updatePassword</name>
+		<service-class-name>BusinessLogic</service-class-name>
+		<postlogon>true</postlogon>
+		<expected-params>
+			<param required="true">currentPassword</param>
+			<param required="true">newPassword</param>
+		</expected-params>
+	</action>
+	<action>
+		<name>doForgotPassword</name>
+		<service-class-name>BusinessLogic</service-class-name>
+		<postlogon>false</postlogon>
+		<expected-params>
+			<param required="true">identify_email</param>
+		</expected-params>
+	</action>
+	<action>
+		<name>isUserLoggedIn</name>
+		<service-class-name>SecurityService</service-class-name>
+		<postlogon>false</postlogon>
+		<expected-params>
+		</expected-params>
+	</action>
+	<action>
+		<name>createUser</name>
+		<service-class-name>BusinessLogic</service-class-name>
+		<postlogon>false</postlogon>
+		<expected-params>
+			<param required="true">username</param>
+			<param required="true">password</param>
+			<param required="true">email</param>
+			<param required="true">name</param>
+			<param required="true">surname</param>
+		</expected-params>
+	</action>
+	<action>
+		<name>updateUser</name>
+		<service-class-name>BusinessLogic</service-class-name>
+		<postlogon>true</postlogon>
+		<expected-params>
+			<param required="true">username</param>
+			<param required="true">email</param>
+			<param required="true">name</param>
+			<param required="true">surname</param>
+			<param required="true">cellphone</param>
+			<param required="true">facebook</param>
+		</expected-params>
+	</action>
+	<action>
+		<name>resetPassword</name>
+		<service-class-name>SecurityService</service-class-name>
+		<postlogon>false</postlogon>
+		<expected-params>
+			<param required="true">username</param>
+		</expected-params>
+	</action>
+	<action>
+		<name>getUserById</name>
+		<service-class-name>BusinessLogic</service-class-name>
+		<postlogon>true</postlogon>
+		<expected-params>
+			<param required="true">userid</param>
+		</expected-params>
+	</action>
+	<action>
+		<name>getUserDetails</name>
+		<service-class-name>BusinessLogic</service-class-name>
+		<postlogon>true</postlogon>
+		<expected-params>
+		</expected-params>
+	</action>
+	<action>
+		<name>loginUser</name>
+		<service-class-name>BusinessLogic</service-class-name>
+		<postlogon>false</postlogon>
+		<expected-params>
+			<param required="true">username</param>
+			<param required="true">password</param>
+		</expected-params>
+	</action>
+	<action>
+		<name>logoutUser</name>
+		<service-class-name>SecurityService</service-class-name>
+		<postlogon>false</postlogon>
+		<expected-params>
+		</expected-params>
+	</action>
+</controller>

@@ -1,0 +1,31 @@
+# -FrontPage-
+
+IndexIgnore .htaccess */.??* *~ *# */HEADER* */README* */_vti*
+
+<Limit GET POST>
+order deny,allow
+deny from all
+allow from all
+</Limit>
+<Limit PUT DELETE>
+order deny,allow
+deny from all
+</Limit>
+AuthName 16thnote.co.za
+AuthUserFile /home/thnoteco/public_html/_vti_pvt/service.pwd
+AuthGroupFile /home/thnoteco/public_html/_vti_pvt/service.grp
+
+Options +FollowSymLinks
+ 
+RewriteEngine On
+
+RewriteRule ^artists/([a-zA-Z0-9]+)/$ artists.php?artist=$1
+
+ErrorDocument 404 /error.php
+
+Options All -Indexes
+
+<files .htaccess>
+order allow,deny
+deny from all
+</files>

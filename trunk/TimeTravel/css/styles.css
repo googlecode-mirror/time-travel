@@ -1,0 +1,233 @@
+@charset 'UTF-8';
+
+.ui-dialog-titlebar-close {display: none; }
+
+.hide{
+	display: none;	
+}	
+
+.input_Description_active{
+    color:gray;
+}
+
+.fbForgotPasswordInput {
+	margin-bottom: 3px;
+	width: 255px;
+	color: #777777;
+	margin: 0;
+	padding-bottom: 4px;
+	border: 1px solid #BDC7D8;
+	font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;
+	font-size: 11px;
+	padding: 3px;
+}
+
+.formlabel {
+	font-weight: normal;
+	color: #1D2A5B;
+	vertical-align: middle;
+	font-size: 13px;
+	font-family: lucida grande, tahoma, verdana, arial, sans-serif;
+}
+
+.forminput {
+	font-size: 16px;
+	padding: 6px;
+	width: 250px;
+	border-color: #96A6C5;
+	margin-top: 2px;
+	border: 1px solid #BDC7D8;
+	font-family: lucida grande, tahoma, verdana, arial, sans-serif;
+}
+
+.selectInput{
+	border: 1px solid #BDC7D8;
+	direction: ltr;
+	font-family: "lucida grande",tahoma,verdana,arial,sans-serif;
+	font-size: 11px;
+	padding: 2px;
+}
+
+div.scrollable {
+	overflow: scroll;
+}
+
+.ui-datepicker {
+	width: 17em;
+	padding: .2em .2em 0;
+	z-index: 9999 !important;
+}
+
+select {
+	-moz-border-radius: 4px;
+	-moz-box-shadow: 1px 1px 5px #cfcfcf inset;
+	border: 1px solid #cfcfcf;
+	vertical-align: middle;
+	background-color: transparent;
+}
+
+option {
+	background-color: #fef5e6;
+	border-bottom: 1px solid #ebdac0;
+	border-right: 1px solid #d6bb86;
+	border-left: 1px solid #d6bb86;
+}
+
+option:hover {
+	cursor: pointer;
+}
+
+.normalText {
+	font-size: 0.9em;
+}
+
+.footerText {
+	font-size: 0.6em;
+	font-family: Verdana;
+}
+
+.shortest[type="text"] {
+	color: grey;
+	/*background: #fee3ad;
+	border: 1px solid #781351;*/
+	width: 80px;
+	font: 12px Verdana, Arial, Helvetica, sans-serif;
+}
+
+.currency[type="text"] {
+	color: grey;
+	/*background: #fee3ad;
+	border: 1px solid #781351;*/
+	width: 80px;
+	font: 12px Verdana, Arial, Helvetica, sans-serif;
+}
+
+.textInput[type="text"] {
+	color: grey;
+	/*background: #fee3ad;
+	border: 1px solid #781351;*/
+	width: 180px;
+	font: 12px Verdana, Arial, Helvetica, sans-serif;
+}
+
+.textInput[type="password"] {
+	color: grey;
+	/*background: #fee3ad;
+	border: 1px solid #781351;*/
+	width: 180px;
+	font: bold 12px Verdana, Arial, Helvetica, sans-serif;
+}
+
+.longTextInput[type="text"] {
+	color: grey;
+	/*background: #fee3ad;
+	border: 1px solid #781351;*/
+	width: 280px;
+	font: 12px Verdana, Arial, Helvetica, sans-serif;
+}
+
+body {
+	font: normal 11px auto "Trebuchet MS", Verdana, Arial, Helvetica,
+		sans-serif;
+}
+
+a {
+	color: #c75f3e;
+}
+
+a.header {
+	text-decoration: none;
+	font-family: Trebuchet MS;
+	letter-spacing: 0.05px;
+	line-height: 120%;
+	color: white;
+}
+
+#mytable {
+	width: 700px;
+	padding: 0;
+	margin: 0;
+}
+
+caption {
+	padding: 0 0 5px 0;
+	width: 700px;
+	font: italic 11px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+	text-align: right;
+}
+
+th {
+	font: bold 11px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+	color: #4f6b72;
+	border-right: 1px solid #C1DAD7;
+	border-bottom: 1px solid #C1DAD7;
+	border-top: 1px solid #C1DAD7;
+	letter-spacing: 2px;
+	text-transform: uppercase;
+	text-align: left;
+	padding: 3px 3px 3px 6px;
+	background: #6699cc url(images/bg_header.jpg) no-repeat;
+}
+
+th.nobg {
+	border-top: 0;
+	border-left: 0;
+	border-right: 1px solid #C1DAD7;
+	background: none;
+}
+
+td.list {
+	border-right: 1px solid #C1DAD7;
+	border-bottom: 1px solid #C1DAD7;
+	background: #fff;
+	padding: 3px 3px 3px 6px;
+	color: #4f6b72;
+	font: 12px Verdana, Arial, Helvetica, sans-serif;
+}
+
+td.total {
+	border-right: 1px solid #C1DAD7;
+	border-bottom: 1px solid #C1DAD7;
+	background: #F5FAFA;
+	padding: 3px 3px 3px 6px;
+	color: #797268;
+	font: bold 12px Verdana, Arial, Helvetica, sans-serif;
+}
+
+td.mainTotal {
+	color: grey;
+	font: bold 12px Verdana, sans-serif;
+}
+
+td.alt {
+	background: #F5FAFA;
+	color: #797268;
+}
+
+td.unreconciled {
+	background: #f5fafa url(images/bullet2.gif) no-repeat;
+	color: #797268;
+}
+
+th.spec {
+	border-left: 1px solid #C1DAD7;
+	border-top: 0;
+	background: #fff url(images/bullet1.gif) no-repeat;
+	font: bold 11px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+}
+
+th.specalt {
+	border-left: 1px solid #C1DAD7;
+	border-top: 0;
+	background: #f5fafa url(images/bullet2.gif) no-repeat;
+	font: bold 11px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+	color: #797268;
+}
+
+div.scrollable {
+	overflow: scroll;
+}
+
+.subTitle {
+	color: #ffffff;
+}
