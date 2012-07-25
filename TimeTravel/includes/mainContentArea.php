@@ -1,4 +1,4 @@
-<?
+<?php
 	require_once(dirname(dirname(__FILE__)) .'/viewbean/Picture.php');
 	require_once(dirname(dirname(__FILE__)) . '/dao/DayDAO.php');
 	require_once(dirname(dirname(__FILE__)) . '/dao/PictureDAO.php');
@@ -283,7 +283,7 @@ $(function() {
 	});
 </script>
 	
-	<?
+	<?php
 			error_reporting(E_ERROR | E_PARSE);
 			session_start();
 			
@@ -328,7 +328,7 @@ $(function() {
 	
 			<div id="showcase" class="showcase">
 				
-				<?
+				<?php
 				foreach($pictures as $picture){
 					$picturesFound = true;
 					$pictureSrc =  '/pictures/'.$username.'/main/'.$picture->filename;
@@ -349,13 +349,13 @@ $(function() {
 					</div>
 				</div>
 		
-		<? }?>
+		<?php }?>
 		
 		</div>
 				
 		</div>
 				
-		<?
+		<?php
 			if ($picturesFound) {
 				$chosenDate = date("Y-m-d", strtotime($picture->timetaken));
 				$diplayDate = date("Y F j l", strtotime($picture->timetaken));
