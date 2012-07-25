@@ -131,7 +131,7 @@
 <button id="doQuery" onclick="fqlQuery();">doQuery</button>
 <button  onclick="TokenToSession();">Get Statuses</button> -->
 
-	<? if (!$hasFbToken) {?>
+	<?php if (!$hasFbToken) {?>
 
 	<div id="fbRegisterDiv" class="formlabel">
 		You have not set up your Facebook account here. If you do, we can show you your status updates on the chosen date so that you may accurately reconstruct the day.
@@ -154,7 +154,7 @@
 	<?php }?>
 
 	
-	<?
+	<?php
 			$chosenDate = $_SESSION['chosenDate'];
 			$diplayDate = $_SESSION['diplayDate'];
 	
