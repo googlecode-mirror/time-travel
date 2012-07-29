@@ -9,6 +9,12 @@ require_once(dirname(dirname(__FILE__)) . '/dto/Action.php');
 date_default_timezone_set('Africa/Johannesburg');
 
 class BusinessLogic{
+	private static $responder;
+	
+	function __construct() {
+		//session_start();
+		self::$responder = new Responder;
+	}
 	
 	/*Moves the pictures for user from the temp folder to the main*/
 	public function moveUserPictures($parameters){
@@ -50,23 +56,18 @@ class BusinessLogic{
 	}
 	
 	public function saveTokenToSession($parameters){
-		try{
-			$accessToken = $parameters["access_token"];
-			$_SESSION["access_token"] = $accessToken;
+
+		$accessToken = $parameters["access_token"];
+		$_SESSION["access_token"] = $accessToken;
 			
-			$userDAO = new UserDAO();
-			$userDAO->saveFbToken($_SESSION["userid"], $accessToken);
+		$userDAO = new UserDAO();
+		$userDAO->saveFbToken($_SESSION["userid"], $accessToken);
+		
+		$this->updateFbDetails($accessToken);
+		$this->retrieveAndSaveAllStatusUpdatesFromFb($accessToken);
 			
-			$this->updateFbDetails($accessToken);
-			$this->retrieveAndSaveAllStatusUpdatesFromFb($_SESSION["access_token"]);
-			
-		} catch (PDOException $e) {
-			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
-			throw new Exception('032');
-		}
-		$responder = new Responder;
-		return $responder->constructResponse(null);
+
+		return self::$responder->constructResponse($response);
 	}
 	
 	private function retrieveAndSaveAllStatusUpdatesFromFb($accessToken){
@@ -170,72 +171,60 @@ class BusinessLogic{
 	}
 	
 	public function updatePictureCaption($parameters){
+		
 		error_log("in updatePictureCaption");
-		try{
-			$pictureDAO = new PictureDAO();
-			$pictureId = $parameters["pictureId"];
-			$caption = $parameters["caption"];
-			$timetaken = $parameters["dateandtime"];
+
+		$pictureDAO = new PictureDAO();
+		$pictureId = $parameters["pictureId"];
+		$caption = $parameters["caption"];
+		$timetaken = $parameters["dateandtime"];
 			
-			if (isset($timetaken)){
-				error_log("timetaken is set");
-				$dayid = $pictureDAO->createDay($_SESSION["userid"], $timetaken);
-				$pictureDAO->updatePictureTimeTaken($pictureId, $dayid, $timetaken);
-				
-			} else if (isset($caption)){
-				$pictureDAO->updatePictureCaption($pictureId, $caption);
-			}
-			
-			
-		} catch (PDOException $e) {
-			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
-			throw new Exception('032');
+		if (isset($timetaken) && ($timetaken != "")){
+			error_log("timetaken is set: ".$timetaken);
+			$dayid = $pictureDAO->createDay($_SESSION["userid"], $timetaken);
+			$pictureDAO->updatePictureTimeTaken($pictureId, $dayid, $timetaken);
+
+		} else if (isset($caption)){
+			$pictureDAO->updatePictureCaption($pictureId, $caption);
 		}
-		$responder = new Responder;
-		return $responder->constructResponse(null);
+			
+		return self::$responder->constructResponse(null);
 	}
 	
 	public function rotatePicture($parameters){
-		try {
-			
-			$pictureDAO = new PictureDAO();
-			$pictureId = $parameters["pictureId"];
-			$picture = $pictureDAO->getPictureById($pictureId);
-			
-			$username = $_SESSION["username"];
-			$rootDir = dirname(dirname(__FILE__)) .'/pictures/'. $username. '/main/';
-			$filepath = $rootDir. $picture->filename;
-			
-			$image1 = @imagecreatefromjpeg($filepath);
 
-			$direction = $parameters["direction"];
-			$degrees = 180;
-			if ($direction == "left"){
-				$degrees = 90;
-			} else if ($direction == "right"){
-				$degrees = -90;
-			}
+		$pictureDAO = new PictureDAO();
+		$pictureId = $parameters["pictureId"];
+		$picture = $pictureDAO->getPictureById($pictureId);
 			
-			$image = @imagerotate($image1, $degrees, 0);
+		$username = $_SESSION["username"];
+		$rootDir = dirname(dirname(__FILE__)) .'/pictures/'. $username. '/main/';
+		$filepath = $rootDir. $picture->filename;
+			
+		$image1 = @imagecreatefromjpeg($filepath);
 
-			imagejpeg($image, $filepath, 100);
+		$direction = $parameters["direction"];
+		$degrees = 180;
+		if ($direction == "left"){
+			$degrees = 90;
+		} else if ($direction == "right"){
+			$degrees = -90;
+		}
+			
+		$image = @imagerotate($image1, $degrees, 0);
 
-			error_log("FILE ".$filepath);
-			imagedestroy($image);
+		imagejpeg($image, $filepath, 100);
 
-			/* $payload = file_get_contents($filepath);
+		error_log("FILE ".$filepath);
+		imagedestroy($image);
+
+		/* $payload = file_get_contents($filepath);
 			$picture->payload = $payload;
 
-			$pictureDAO->editPicture($picture);
-			unlink($filepath); */
-		} catch (Exception $e) {
-			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
-			throw new Exception('032');
-		}
-		$responder = new Responder;
-		return $responder->constructResponse(null);
+		$pictureDAO->editPicture($picture);
+		unlink($filepath); */
+
+		return self::$responder->constructResponse(null);
 	}
 
 	public function updatePassword($parameters){
@@ -243,34 +232,28 @@ class BusinessLogic{
 		$securityServices = new SecurityService;
 		$capturedCurrentPassword = $parameters["currentPassword"];
 		$capturedNewPassword = $parameters["newPassword"];
-		try {
-			verifyUserSession($parameters);
+
+		verifyUserSession($parameters);
 			
-			$dbCurrentPassword = $securityServices->getUserPassword($parameters["userid"]);
+		$dbCurrentPassword = $securityServices->getUserPassword($parameters["userid"]);
 
-			if ((md5($capturedCurrentPassword, true)) != $dbCurrentPassword){
-				throw new Exception("034");
-			}
-
-			$securityServices->updatePassword($parameters["userid"], $capturedNewPassword);
-
-			try {
-				$communicationServices = new CommunicationServices;
-				$subject = "Kagogo Password Change";
-				$body = "Hi, \n\n You have changed your password at Kagogo.co.co.za. \n\n Thank you for being part of our community.";
-				$communicationServices->sendEmail($user->email, $subject, $body);
-			} catch (Exception $e){
-				error_log("Exception! Could not send email about updated details.  userid:".$userid);
-			}
-
-		} catch (PDOException $e) {
-			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
-			throw new Exception('032');
+		if ((md5($capturedCurrentPassword, true)) != $dbCurrentPassword){
+			throw new Exception("034");
 		}
 
-		$responder = new Responder;
-		return $responder->constructResponse("You password has been updated successfully.");
+		$securityServices->updatePassword($parameters["userid"], $capturedNewPassword);
+
+		try {
+			$communicationServices = new CommunicationServices;
+			$subject = "TimeTravel Password Change";
+			$body = "Hi, \n\n You have changed your password at Sabside.com. \n\n Thank you for being part of our community.";
+			$communicationServices->sendEmail($user->email, $subject, $body);
+		} catch (Exception $e){
+			error_log("Exception! Could not send email about updated details.  userid:".$userid);
+		}
+
+
+		return self::$responder->constructResponse("You password has been updated successfully.");
 	}
 	
 	private function verifyUserSession($parameters){
@@ -283,17 +266,10 @@ class BusinessLogic{
 	 */
 	public function getUserDetails($parameters){
 		$securityServices = new SecurityService;
-		try {
-			$user = $securityServices->getUserById($parameters["userid"]);
 
-		} catch (PDOException $e) {
-			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
-			throw new Exception('001');
-		}
+		$user = $securityServices->getUserById($parameters["userid"]);
 
-		$responder = new Responder;
-		return $responder->constructResponse($user);
+		return self::$responder->constructResponse($user);
 	}
 
 	public function updateUser($parameters){
@@ -322,8 +298,7 @@ class BusinessLogic{
 			error_log("Exception! Could not send email about updated details.  userid:".$userid);
 		}
 
-		$responder = new Responder;
-		return $responder->constructResponse("Your details have been updated successfully.");
+		return self::$responder->constructResponse("Your details have been updated successfully.");
 	}
 
 
@@ -341,7 +316,6 @@ class BusinessLogic{
 		}
 
 
-		$responder = new Responder;
 		if (!isset($user)){
 			throw new Exception("031");
 		} else {
@@ -354,7 +328,7 @@ class BusinessLogic{
 
 			try {
 				$communicationServices->sendEmail($user->email, $subject, $body);
-				return $responder->constructResponse("We have sent you an email to your email address with the details to logon to Kagogog.co.za.");
+				return self::$responder->constructResponse("We have sent you an email to your email address with the details to logon to Kagogog.co.za.");
 			} catch (Exception $e){
 				throw new Exception($e->getMessage());
 			}
@@ -373,8 +347,7 @@ class BusinessLogic{
 			throw new Exception('001');
 		}
 
-		$responder = new Responder;
-		return $responder->constructResponse(null);
+		return self::$responder->constructResponse(null);
 	}
 
 	public function getUserById($parameters){
@@ -388,8 +361,7 @@ class BusinessLogic{
 			throw new Exception('001');
 		}
 
-		$responder = new Responder;
-		return $responder->constructResponse($user);
+		return self::$responder->constructResponse($user);
 	}
 
 
@@ -399,18 +371,10 @@ class BusinessLogic{
 		$password = $parameters["password"];
 		$securityServices = new SecurityService;
 
-		try {
 
-			$securityServices->loginUser($username, $password);
+		$securityServices->loginUser($username, $password);
 
-		} catch (PDOException $e) {
-			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
-			throw new Exception('001');
-		}
-
-		$responder = new Responder;
-		return $responder->constructResponse(null);
+		return self::$responder->constructResponse(null);
 	}
 	
 	
