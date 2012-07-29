@@ -23,8 +23,7 @@ class PictureDAO {
 			$stmt->execute();
 	
 		} catch (PDOException $e) {
-			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
+			error_log("Error: ".$e->getMessage());
 			throw new Exception('004');
 		}
 	}
@@ -49,8 +48,7 @@ class PictureDAO {
 			$stmt->execute();
 
 		} catch (PDOException $e) {
-			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
+			error_log("Error: ".$e->getMessage());
 			throw new Exception('004');
 		}
 	}
@@ -73,8 +71,7 @@ class PictureDAO {
 		
 		
 		} catch (PDOException $e) {
-			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
+			error_log("Error: ".$e->getMessage());
 			throw new Exception('004');
 		}
 		return $picture;
@@ -98,8 +95,7 @@ class PictureDAO {
 	
 	
 		} catch (PDOException $e) {
-			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
+			error_log("Error: ".$e->getMessage());
 			throw new Exception('004');
 		}
 		return $itemslist;
@@ -136,8 +132,7 @@ class PictureDAO {
 			error_log("[PictureDAO] done savePicture..");
 			
 		} catch (PDOException $e) {
-			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
+			error_log("Error: ".$e->getMessage());
 			throw new Exception('036');
 		}
 	
@@ -166,8 +161,7 @@ class PictureDAO {
 			error_log("[PictureDAO] done editPicture..");
 				
 		} catch (PDOException $e) {
-			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
+			error_log("Error: ".$e->getMessage());
 			throw new Exception('036');
 		}
 	
@@ -192,9 +186,8 @@ class PictureDAO {
 			$stmt->execute();
 			error_log("[PictureDAO] done creating day..");
 		} catch (PDOException $e) {
-			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
-			throw new Exception('036');
+			error_log("Error: ".$e->getMessage());
+			throw new Exception('005');
 		}
 	
 		return $dayId;
@@ -218,8 +211,7 @@ class PictureDAO {
 			}
 	
 		} catch (PDOException $e) {
-			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
+			error_log("Error: ".$e->getMessage());
 			throw new Exception('018');
 		}
 	
@@ -243,8 +235,7 @@ class PictureDAO {
 			}
 	
 		} catch (PDOException $e) {
-			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
+			error_log("Error: ".$e->getMessage());
 			throw new Exception('018');
 		}
 	
@@ -270,8 +261,7 @@ class PictureDAO {
 			}
 		
 		} catch (PDOException $e) {
-			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
+			error_log("Error: ".$e->getMessage());
 			throw new Exception('018');
 		}
 		
