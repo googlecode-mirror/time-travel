@@ -6,7 +6,7 @@ require_once "errorCodes.php";
 require_once "dto/Action.php";
 require_once "ErrorHandler.php";
 
-//setCustomError();
+setCustomError();
 $errMessage = "";
 $errCode = 0;
 try {
@@ -69,7 +69,7 @@ try {
 	$responder = new Responder;
 	$errorCodes = new ErrorCodes;
 	$errMessage = $errorCodes->getErrorMessage($e->getMessage());
-	error_log("Error Message: " . $errMessage);
+	error_log("Controller Error Message: " . $errMessage);
 	echo $responder->constructErrorResponse($errMessage);
 
 }
