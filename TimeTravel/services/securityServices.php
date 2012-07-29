@@ -9,6 +9,7 @@ class SecurityService  {
 	public function getUserPassword($userid){
 		try {
 			$con = new PDO(GlobalConfig::db_pdo_connect_string, GlobalConfig::db_username, GlobalConfig::db_password);
+			$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			$stmt = $con->prepare("select password from user where id= :userid");
 			$stmt->bindParam(':userid', $userid);
 
@@ -20,7 +21,6 @@ class SecurityService  {
 
 		} catch (PDOException $e) {
 			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
 			throw new Exception('033');
 		}
 		return $password;
@@ -29,6 +29,7 @@ class SecurityService  {
 	public function getUserByUsername($username){
 		try {
 			$con = new PDO(GlobalConfig::db_pdo_connect_string, GlobalConfig::db_username, GlobalConfig::db_password);
+			$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			$stmt = $con->prepare("select * from user where username= :username");
 			$stmt->bindParam(':username', $username);
 
@@ -41,7 +42,6 @@ class SecurityService  {
 
 		} catch (PDOException $e) {
 			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
 			throw new Exception('027');
 		}
 
@@ -51,6 +51,7 @@ class SecurityService  {
 	public function getUserByEmailAddress($emailaddress){
 		try {
 			$con = new PDO(GlobalConfig::db_pdo_connect_string, GlobalConfig::db_username, GlobalConfig::db_password);
+			$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			$stmt = $con->prepare("select * from user where email= :email");
 			$stmt->bindParam(':email', $emailaddress);
 
@@ -63,7 +64,6 @@ class SecurityService  {
 
 		} catch (PDOException $e) {
 			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
 			throw new Exception('027');
 		}
 
@@ -115,7 +115,6 @@ class SecurityService  {
 			error_log("[SecurityService] done creating user...");
 		} catch (PDOException $e) {
 			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
 			throw new Exception('019');
 		}
 
@@ -127,6 +126,7 @@ class SecurityService  {
 		$maxId = 0;
 		try {
 			$con = new PDO(GlobalConfig::db_pdo_connect_string, GlobalConfig::db_username, GlobalConfig::db_password);
+			$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			$stmt = $con->prepare("select max(id) as id from ".$table);
 
 			if ($stmt->execute()){
@@ -137,7 +137,6 @@ class SecurityService  {
 
 		} catch (PDOException $e) {
 			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
 			throw new Exception('004');
 		}
 		return $maxId;
@@ -166,7 +165,6 @@ class SecurityService  {
 
 		} catch (PDOException $e) {
 			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
 			throw new Exception('030');
 		}
 		return $generatedPass;
@@ -178,6 +176,7 @@ class SecurityService  {
 		try {
 
 			$con = new PDO(GlobalConfig::db_pdo_connect_string, GlobalConfig::db_username, GlobalConfig::db_password);
+			$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			$stmt = $con->prepare("update user set password=:password where id=:userid");
 			$stmt->bindParam(':password', $hashedPass);
 			$stmt->bindParam(':userid', $userid);
@@ -188,7 +187,6 @@ class SecurityService  {
 
 		} catch (PDOException $e) {
 			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
 			throw new Exception('032');
 		}
 	}
@@ -197,6 +195,7 @@ class SecurityService  {
 		$emailaddres = "";
 		try {
 			$con = new PDO(GlobalConfig::db_pdo_connect_string, GlobalConfig::db_username, GlobalConfig::db_password);
+			$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			$stmt = $con->prepare("select email from user where username= :username");
 			$stmt->bindParam(':username', $username);
 
@@ -209,7 +208,6 @@ class SecurityService  {
 
 		} catch (PDOException $e) {
 			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
 			throw new Exception('004');
 		}
 		return $emailaddres;
@@ -234,6 +232,7 @@ class SecurityService  {
 	private function isUsernameExist($username){
 		try {
 			$con = new PDO(GlobalConfig::db_pdo_connect_string, GlobalConfig::db_username, GlobalConfig::db_password);
+			$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			$stmt = $con->prepare("select * from user where username= :username");
 			$stmt->bindParam(':username', $username);
 
@@ -248,7 +247,6 @@ class SecurityService  {
 
 		} catch (PDOException $e) {
 			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
 			throw new Exception('018');
 		}
 
@@ -263,6 +261,7 @@ class SecurityService  {
 	private function isUserEmailExist($emailaddress){
 		try {
 			$con = new PDO(GlobalConfig::db_pdo_connect_string, GlobalConfig::db_username, GlobalConfig::db_password);
+			$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			$stmt = $con->prepare("select * from user where email=:email");
 			$stmt->bindParam(':email', $emailaddress);
 
@@ -321,7 +320,6 @@ class SecurityService  {
 
 		} catch (PDOException $e) {
 			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
 			throw new Exception('019');
 		}
 	}
@@ -330,6 +328,7 @@ class SecurityService  {
 	public function getUserById($userid){
 		try {
 			$con = new PDO(GlobalConfig::db_pdo_connect_string, GlobalConfig::db_username, GlobalConfig::db_password);
+			$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			$stmt = $con->prepare("select * from user where id= :userid");
 			$stmt->bindParam(':userid', $userid);
 
@@ -342,7 +341,6 @@ class SecurityService  {
 
 		} catch (PDOException $e) {
 			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
 			throw new Exception('027');
 		}
 
@@ -358,6 +356,7 @@ class SecurityService  {
 		$result = false;
 		try {
 			$con = new PDO(GlobalConfig::db_pdo_connect_string, GlobalConfig::db_username, GlobalConfig::db_password);
+			$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			$stmt = $con->prepare("select * from user where username= :username and active is true");
 			$stmt->bindParam(':username', $username);
 
@@ -403,7 +402,6 @@ class SecurityService  {
 			}
 		} catch (PDOException $e) {
 			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
 			throw new Exception('001');
 		}
 		return $result;
@@ -412,13 +410,13 @@ class SecurityService  {
 	private function updateUserLoginDate($username){
 		try {
 			$con = new PDO(GlobalConfig::db_pdo_connect_string, GlobalConfig::db_username, GlobalConfig::db_password);
+			$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			$stmt = $con->prepare("update user set lastlogin=NOW() where username=:username");
 			$stmt->bindParam(':username', $username);
 			$stmt->execute();
 
 		} catch (PDOException $e) {
 			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
 		}
 	}
 
