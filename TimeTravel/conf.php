@@ -6,6 +6,6 @@ class GlobalConfig
 	const db_password  = 'Musn12nat';
 	const db_name = 'journal';
 	const db_pdo_connect_string  = 'mysql:dbname=journal;host=localhost';
-	const facebook_url = "http://travel.mzansicharts.co.za/index.php?response=facebook";
+	const facebook_url = "http://www.sabside.co.za/index.php?response=facebook";
 }
 ?>

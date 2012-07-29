@@ -383,11 +383,14 @@ class SecurityService  {
 					throw new Exception('024');
 				}
 
-				session_start();
-				$_SESSION["username"] = $username;
-				$_SESSION["password"] = $password;
-				$_SESSION["userid"] = $userid;
-				$_SESSION["name"] = $name;
+				if (session_start()){
+					$_SESSION["username"] = $username;
+					$_SESSION["password"] = $password;
+					$_SESSION["userid"] = $userid;
+					$_SESSION["name"] = $name;
+				}
+				
+				//return $_SESSION["name"];
 				
 				if (isset($fbToken)){
 					$_SESSION["access_token"] = $fbToken;

@@ -284,11 +284,9 @@ $(function() {
 </script>
 	
 	<?php
-			error_reporting(E_ERROR | E_PARSE);
 			session_start();
 			
-			$userid = "";
-			$loggedIn = false;
+			//var_dump($_SESSION);
 			if (isset($_SESSION['name'])) {
 				$userid = $_SESSION["userid"];
 				$username = $_SESSION['username'];
@@ -296,7 +294,6 @@ $(function() {
 				error_log("session is set");
 			}
 			
-			echo "USERID: ".$userid;
 			$dayDAO = new DayDAO();
 
 			if (isset($_GET["dateText"])){

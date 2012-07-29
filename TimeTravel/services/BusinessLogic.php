@@ -12,7 +12,7 @@ class BusinessLogic{
 	private static $responder;
 	
 	function __construct() {
-		//session_start();
+		session_start();
 		self::$responder = new Responder;
 	}
 	
@@ -372,8 +372,8 @@ class BusinessLogic{
 		$securityServices = new SecurityService;
 
 
-		$securityServices->loginUser($username, $password);
-
+		$response = $securityServices->loginUser($username, $password);
+		
 		return self::$responder->constructResponse(null);
 	}
 	

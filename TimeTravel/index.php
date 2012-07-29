@@ -68,7 +68,7 @@ A:hover {text-decoration: underline;}
 </div>
 
 <div id="globalContaier" style="width: 100%; position: absolute; top: 40px;" align="center">
-		<div id="loggedInContentAread" style="width: 850px; display: <?php echo$loggedIn? "block" : "none" ?>;">
+		<div id="loggedInContentAread" style="width: 850px; display: <?php echo $loggedIn? "block" : "none" ?>;">
 			<div id="addInfoDiv" style="float: left; text-align: right;">
 				<div style="font-size: 0.9em; color: #999; font-weight: bold; margin-top: 12px; padding-right: 15px;"><a href="index.php?response=pictures">PICTURES</a></div>
 				<div style="font-size: 0.9em; color: #999; font-weight: bold; margin-top: 12px; padding-right: 15px;"><a href="index.php?response=facebook" >STATUS UPDATES</a></div>

@@ -10,10 +10,12 @@
 		<td width="15%" align="center">
 		
 		<?php
-			if (!($_SESSION['name']) != null) {
+			session_start();
+			
+			if (!isset($_SESSION['name'])) {
 		?>
 			<a id="loginUrl" href="#" class="header" onclick="showLoginDlg();"><img src="images/login.png" border="0"/>Login</a>
-		<?php  } else { ?>
+		<?php   } else { ?>
 
 			<a id="logoutUrl" href="#" class="header" onclick="logoutUser(fbUserLogout);"><img src="images/logout.png" border="0"/>Logout
 			</a>
