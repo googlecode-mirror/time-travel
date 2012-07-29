@@ -32,10 +32,8 @@ A:hover {text-decoration: underline;}
 
 </head>
 <body style="font-size: 75%" >
- <?php 	include_once ("includes/header.php"); 
+ <?php	include_once ("includes/header.php"); 
  		include_once ("includes/application.specific.overlays.php");
- 	?>
- <?php 
  
  	$facebookAccessToken = "";
  	$mainContentType = "";
