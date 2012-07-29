@@ -288,14 +288,15 @@ $(function() {
 			session_start();
 			
 			$userid = "";
-			$logggedIn = false;
+			$loggedIn = false;
 			if (isset($_SESSION['name'])) {
 				$userid = $_SESSION["userid"];
 				$username = $_SESSION['username'];
-				$logggedIn = true;
+				$loggedIn = true;
 				error_log("session is set");
 			}
 			
+			echo "USERID: ".$userid;
 			$dayDAO = new DayDAO();
 
 			if (isset($_GET["dateText"])){
@@ -382,11 +383,11 @@ $(function() {
 		
 
 		
-		<div style="position: relative; left: 0px; background-image:  url(../images/ui-bg_highlight-soft_100_eeeeee_1x100.png) 50% top repeat-x; width:100%; background-color: #EEE; display: <?php echo$picturesFound? "block" : "none"; ?>;">
-			<a href="#" onclick="callPictureRotate('left');">Rotate Left</a>&nbsp;&nbsp;
-			<a href="#" onclick="callPictureRotate('right');">Rotate Right</a>&nbsp;&nbsp;
-			<a href="#" onclick="showCaptionOverlay();">Edit Description</a>&nbsp;&nbsp;
-			<a href="#" onclick="showDateTakenOverlay();">Edit Picture Date</a>
+		<div style="padding-top: 5px; position: relative; left: 0px; background-image:  url(../images/ui-bg_highlight-soft_100_eeeeee_1x100.png) 50% top repeat-x; width:100%; background-color: #EEE; display: <?php echo$picturesFound? "block" : "none"; ?>;">
+			<a href="#" onclick="callPictureRotate('left');" title="Rotate picture left"><img src="/images/rotate-left.png"width="22"/></a>&nbsp;&nbsp;
+			<a href="#" onclick="callPictureRotate('right');" title="Rotate picture right"><img src="/images/rotate-right.png"width="22"/></a>&nbsp;&nbsp;
+			<a href="#" onclick="showCaptionOverlay();" title="Edit caption"><img src="/images/comment.png"width="22"/></a>&nbsp;&nbsp;
+			<a href="#" onclick="showDateTakenOverlay();" title="Edit picture date"><img src="/images/calendar.png"width="22"/></a>
 		</div>
 		<br/><br/>
 		<div class="formlabel" style="display: <?php echo$statusUpdateFound? "block" : "none"; ?>;">
