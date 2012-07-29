@@ -45,7 +45,7 @@
 
 
 <?php 
-		
+	$userid = $_SESSION["userid"];
 	$dayDAO = new DayDAO();
 	$earliestDate = $dayDAO->getEarliestDateOfMemory($userid);
 	$earliestYear = intval(substr($earliestDate, 0, 4));

@@ -1,6 +1,10 @@
 <?php
 class Responder{
 
+	public function doDebug($reponseObject){
+		return $reponseObject;
+	}
+	
 	public function constructErrorResponse($reponseObject){
 		return "<result><code>1</code><errMessage>".  $reponseObject ."</errMessage></result>";
 	}

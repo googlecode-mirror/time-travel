@@ -13,15 +13,15 @@
 date_default_timezone_set('Europe/Minsk');
 require_once((dirname(dirname(dirname(dirname(__FILE__))))) .'/viewbean/Picture.php');
 require_once((dirname(dirname(dirname(dirname(__FILE__))))) .'/dao/PictureDAO.php');
-error_reporting(E_ERROR | E_PARSE);
-session_start();
+//error_reporting(E_ERROR | E_PARSE);
 
 class UploadHandler
 {
     protected $options;
 
     function __construct($options=null) {
-        $this->options = array(
+    	session_start();
+    	$this->options = array(
             'script_url' => $this->getFullUrl().'/',
             //'upload_dir' => dirname($_SERVER['SCRIPT_FILENAME']).'/files/',
             //'upload_url' => $this->getFullUrl().'/files/',
