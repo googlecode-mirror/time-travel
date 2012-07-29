@@ -14,7 +14,9 @@ class ErrorCodes {
 		"002" => "Invalid credentials. Try again.",
 		"003" => "Could not log user out.",
 		"004" => "Unknown error occured",
-		"005" => "Could not retrieve transaction.",
+		"005" => "Could not create day",
+				
+				
 		"006" => "Could not delete budget item.",
 		"007" => "Could not save account details.",
 		"008" => "Could not get budget items.",
@@ -46,6 +48,8 @@ class ErrorCodes {
 		"035" => "The email address you picked already exists.",
 		"036" => "Could not save lift.",
 		"037" => "You are trying to access data that you are not authorized to.",
+		"038" => "Username not set in session.",
+		"039" => "Could not copy files to main directory.",
 
 		//GENERAL
 		"025" => "Error. supplied field is too short.",
