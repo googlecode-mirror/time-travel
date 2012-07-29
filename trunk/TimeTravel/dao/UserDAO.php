@@ -19,7 +19,6 @@ class UserDAO {
 	
 		} catch (PDOException $e) {
 			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
 			throw new Exception('018');
 		}
 	
@@ -43,7 +42,6 @@ class UserDAO {
 	
 		} catch (PDOException $e) {
 			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
 			throw new Exception('018');
 		}
 	
@@ -67,7 +65,6 @@ class UserDAO {
 		
 		} catch (PDOException $e) {
 			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
 			throw new Exception('004');
 		}
 		return $statusUpdate;
@@ -92,7 +89,6 @@ class UserDAO {
 		
 		} catch (PDOException $e) {
 			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
 			throw new Exception('004');
 		}
 		return $itemslist;
