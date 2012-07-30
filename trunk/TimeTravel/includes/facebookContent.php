@@ -6,6 +6,7 @@
  	
 	$facebook_url =  GlobalConfig::facebook_url;
 
+	error_reporting(E_ERROR | E_PARSE);
  	session_start();
  	
  	$hasFbToken = false;

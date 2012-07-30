@@ -103,21 +103,18 @@ class PictureDAO {
 	}
 	
 	public function savePicture($dayId, $picture){
-		error_log("in savePicture...");
+		Logger::log("in savePicture...");
 		$id = $this->isPictureForUserExisting($dayId, $picture);
 		
-		if ($id == -1){
-			$id = $this->getNextAutoIncrementValueForTable("picture");
-		} else {
-			error_log("picture already exists!");
+		if ($id != -1){
+			Logger::log("picture already exists!");
 			return;
 		}
 
 		try {
 			$con = new PDO(GlobalConfig::db_pdo_connect_string, GlobalConfig::db_username, GlobalConfig::db_password);
 			$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-			$stmt = $con->prepare("insert into picture (id, description, dayid, location, timetaken, latitude, longitude, fileType, filename, payload) values (:id, :description, :dayId, :location, :timetaken, :latitude, :longitude, :fileType, :filename, :payload)");
-			$stmt->bindParam(':id', $id);
+			$stmt = $con->prepare("insert into picture (description, dayid, location, timetaken, latitude, longitude, fileType, filename) values (:description, :dayId, :location, :timetaken, :latitude, :longitude, :fileType, :filename)");
 			$stmt->bindParam(':description', $picture->description);
 			$stmt->bindParam(':dayId', $dayId);
 			$stmt->bindParam(':location', $picture->location);
@@ -126,13 +123,14 @@ class PictureDAO {
 			$stmt->bindParam(':longitude', $picture->longitude);
 			$stmt->bindParam(':fileType', $picture->fileType);
 			$stmt->bindParam(':filename', $picture->filename);
-			$stmt->bindParam(':payload', $picture->payload, PDO::PARAM_LOB);
+			//$stmt->bindParam(':payload', $picture->payload, PDO::PARAM_LOB);
 
 			
 			$stmt->execute();
 			error_log("[PictureDAO] done savePicture..");
 			
 		} catch (PDOException $e) {
+			Logger::log($e->getMessage());
 			error_log("Error: ".$e->getMessage());
 			throw new Exception('036');
 		}
