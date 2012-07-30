@@ -3,7 +3,7 @@
 class ErrorCodes {
 
 	public function getErrorMessage($errCode){
-
+		
 		if (!isset($errCode)){
 			$errCode = "004";
 		}
@@ -56,7 +56,12 @@ class ErrorCodes {
 		"026" => "You need to login to use this function."
 		);
 
-		return $messages[$errCode];
+
+		if (!isset($messages[$errCode])){
+			return $errCode;
+		} else{
+			return $messages[$errCode];
+		}
 	}
 }
 
