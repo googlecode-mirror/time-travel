@@ -469,21 +469,21 @@ class UploadHandler
     		$timetaken = null;
     		 
     		$filename = $exif_file['FileName'];
-    		 
-    		if (isset($exif_ifd0['DateTime'])){
-    			//We get the date and time the picture was taken
-    			try {
-    				$rawTimeTaken = $exif_ifd0['DateTime'];
-    				error_log("IFDO TIME TAKEN : ".$rawTimeTaken);
-    				$timetaken = date("Y-m-d H:i:s", strtotime($rawTimeTaken));
-    			} catch (Exception $e){
-    		
-    			}
-    		} else if (isset($exif_exif['DateTimeOriginal'])){
+
+    		if (isset($exif_exif['DateTimeOriginal'])){
     			//We get the date and time the picture was taken
     			try {
     				$rawTimeTaken = $exif_exif['DateTimeOriginal'];
     				error_log("EXIF TIME TAKEN : ".$rawTimeTaken);
+    				$timetaken = date("Y-m-d H:i:s", strtotime($rawTimeTaken));
+    			} catch (Exception $e){
+    		
+    			}
+    		} else  if (isset($exif_ifd0['DateTime'])){
+    			//We get the date and time the picture was taken
+    			try {
+    				$rawTimeTaken = $exif_ifd0['DateTime'];
+    				error_log("IFDO TIME TAKEN : ".$rawTimeTaken);
     				$timetaken = date("Y-m-d H:i:s", strtotime($rawTimeTaken));
     			} catch (Exception $e){
     		
