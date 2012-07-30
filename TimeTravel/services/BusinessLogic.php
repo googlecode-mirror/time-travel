@@ -6,6 +6,7 @@ require_once(dirname(dirname(__FILE__)) . '/dao/UserDAO.php');
 require_once(dirname(dirname(__FILE__)) . '/dao/DayDAO.php');
 require_once(dirname(dirname(__FILE__)) . '/errorCodes.php');
 require_once(dirname(dirname(__FILE__)) . '/dto/Action.php');
+require_once(dirname(dirname(__FILE__)) .'/conf.php');
 date_default_timezone_set('Africa/Johannesburg');
 
 class BusinessLogic{
@@ -48,7 +49,6 @@ class BusinessLogic{
 			
 		} catch (PDOException $e) {
 			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
 			throw new Exception('032');
 		}
 		$responder = new Responder;
@@ -56,72 +56,135 @@ class BusinessLogic{
 	}
 	
 	public function saveTokenToSession($parameters){
-
-		$accessToken = $parameters["access_token"];
-		$_SESSION["access_token"] = $accessToken;
+		try {
+			$accessToken = $parameters["access_token"];
+			$_SESSION["access_token"] = $accessToken;
+				
+			$userDAO = new UserDAO();
 			
-		$userDAO = new UserDAO();
-		$userDAO->saveFbToken($_SESSION["userid"], $accessToken);
-		
-		$this->updateFbDetails($accessToken);
-		$this->retrieveAndSaveAllStatusUpdatesFromFb($accessToken);
+			if (!isset($_SESSION["nextState"])){
+				$_SESSION["nextState"] = $state = "saveFbToken";
+			} else {
+				$state = $_SESSION["nextState"];
+			}
 			
+			self::log("STATE: ".$state);
+			
+			switch ($state){
+				case "saveFbToken": $userDAO->saveFbToken($_SESSION["userid"], $accessToken);
+				$_SESSION["nextState"] = "updateFbDetails";
+				return self::$responder->constructLoopResponse("Facebook token saved successfully.");
+				
+				case "updateFbDetails": $this->updateFbDetails($accessToken);
+				$_SESSION["nextState"] = "retrieveAndSaveAllStatusUpdatesFromFb";
+				return self::$responder->constructLoopResponse("User details saved successfully.");
+				
+				case "retrieveAndSaveAllStatusUpdatesFromFb": $done = $this->retrieveAndSaveAllStatusUpdatesFromFb($accessToken);
+			
+				if ($done){
+					unset($_SESSION["nextState"]);
+					unset($_SESSION["fbUrl"]);
+					return self::$responder->constructResponse(null);
+				} else{
+					return self::$responder->constructLoopResponse("Status updates saved successfully.");
+				}
+			}
+				
+		} catch (Exception $e){
+			unset($_SESSION["nextState"]);
+			unset($_SESSION["fbUrl"]);
+			throw new Exception($e->getMessage());
+		}
 
-		return self::$responder->constructResponse($response);
+		return self::$responder->constructResponse(null);
 	}
 	
+	public static function log($output){
+		file_put_contents((dirname(dirname(__FILE__)) ."/testing.text"), $output ."\n", FILE_APPEND | LOCK_EX);
+	}
+	
+	
 	private function retrieveAndSaveAllStatusUpdatesFromFb($accessToken){
-		error_log("fetching statuses from fb...");
-		$response = file_get_contents("https://graph.facebook.com/me/statuses?access_token=".  $accessToken);
-		error_log("STATUS UPDATE: ".$response);
-		$statuses = json_decode($response);
-		$statusesArray = $statuses->{'data'};
-		$userid = $_SESSION["userid"];
-		
-		$userDAO = new UserDAO();
-		$pictureDAO = new PictureDAO();
-		foreach ($statusesArray as $status){
-			 $gmtTimezone = new DateTimeZone('Africa/Johannesburg');
-			 $myDateTime = new DateTime($status->{'updated_time'}, $gmtTimezone);
-			 	
-			 $theDate = date('c', $myDateTime->format('U') + 1);
-			 $theDate = date('Y-m-d H:i:s', strtotime($theDate));
-			 error_log("DATE: ".$theDate);
-			 $message = $status->{'message'};
-			 $messageId = $status->{'id'};
-			 	
-			 $dayId = $pictureDAO->createDay($userid, $theDate);
-			 $userDAO->saveStatusUpdate($userid, $theDate, $message, $messageId, $dayId);
-		}
+		error_log("in retrieveAndSaveAllStatusUpdatesFromFb...");
 
-		$url = $statuses->paging->{'next'};
-		while (isset($url)){
-			set_time_limit(60);
+			set_time_limit(0);
 			error_log("fetching statuses from fb...");
-			$response = file_get_contents($url);
-			error_log("STATUS UPDATE: ".$response);
-			$statuses = json_decode($response);
-			$statusesArray = $statuses->{'data'};
-			$userDAO = new UserDAO();
-			foreach ($statusesArray as $status){
-				$gmtTimezone = new DateTimeZone('Africa/Johannesburg');
-				$myDateTime = new DateTime($status->{'updated_time'}, $gmtTimezone);
-					
-				$theDate = date('c', $myDateTime->format('U') + 1);
-				$theDate = date('Y-m-d H:i:s', strtotime($theDate));
-				error_log("DATE: ".$theDate);
-				$message = $status->{'message'};
-				$messageId = $status->{'id'};
-					
-				$dayId = $pictureDAO->createDay($userid, $theDate);
-				$userDAO->saveStatusUpdate($userid, $theDate, $message, $messageId, $dayId);
+			
+			
+			if (!isset($_SESSION["fbUrl"])){
+				$_SESSION["fbUrl"] = $url = "https://graph.facebook.com/me/statuses?access_token=".  $accessToken;
+			} else {
+				$url = $_SESSION["fbUrl"];
 			}
 			
-			$url = null;
+			
+			$response = file_get_contents($url);
+			
+			$statuses = json_decode($response);
+			$statusesArray = $statuses->{'data'};
+			$userid = $_SESSION["userid"];
+
+			$userDAO = new UserDAO();
+			$pictureDAO = new PictureDAO();
+			error_log("Reading the Status Array...");
+			$count = 0;
+			foreach ($statusesArray as $status){
+				set_time_limit(20);
+				
+				$gmtTimezone = new DateTimeZone('Africa/Johannesburg');
+				$myDateTime = new DateTime($status->{'updated_time'}, $gmtTimezone);
+
+				$theDate = date('c', $myDateTime->format('U') + 1);
+				$theDate = date('Y-m-d H:i:s', strtotime($theDate));
+				
+				$message = $status->{'message'};
+				$messageId = $status->{'id'};
+
+				$dayId = $pictureDAO->createDay($userid, $theDate);
+				$userDAO->saveStatusUpdate($userid, $theDate, $message, $messageId, $dayId);
+			} 
+
+						
 			if (isset($statuses->paging->{'next'})){
-				$url = $statuses->paging->{'next'};
+				$_SESSION["fbUrl"] = $statuses->paging->{'next'};
+				return false;
+			} else {
+				return true;
 			}
-		}
+			
+			
+			/* while (isset($url)){
+				error_log("fetching statuses from fb...");
+				self::log("fetching statuses from fb...");
+				$response = file_get_contents($url);
+				error_log("STATUS UPDATE: ".$response);
+				self::log("status: ".$response);
+				$statuses = json_decode($response);
+				$statusesArray = $statuses->{'data'};
+
+				foreach ($statusesArray as $status){
+					set_time_limit(30);
+					self::log("saving...");
+					$gmtTimezone = new DateTimeZone('Africa/Johannesburg');
+					$myDateTime = new DateTime($status->{'updated_time'}, $gmtTimezone);
+						
+					$theDate = date('c', $myDateTime->format('U') + 1);
+					$theDate = date('Y-m-d H:i:s', strtotime($theDate));
+					error_log("DATE: ".$theDate);
+					$message = $status->{'message'};
+					$messageId = $status->{'id'};
+						
+					$dayId = $pictureDAO->createDay($userid, $theDate);
+					self::log("saved day...".$dayId);
+					$userDAO->saveStatusUpdate($userid, $theDate, $message, $messageId, $dayId);
+					self::log("saved status...");
+				} 
+
+				if (isset($statuses->paging->{'next'})){
+					$url = $statuses->paging->{'next'};
+				}
+			}*/
+
 		
 	}
 	
@@ -343,7 +406,6 @@ class BusinessLogic{
 			$user = $securityServices->createUser($parameters["username"], $password, $parameters["name"], $parameters["surname"], $parameters["email"]);
 		} catch (PDOException $e) {
 			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
 			throw new Exception('001');
 		}
 
@@ -357,7 +419,6 @@ class BusinessLogic{
 
 		} catch (PDOException $e) {
 			print "Error!: " . $e->getMessage() . "<br/>";
-			die();
 			throw new Exception('001');
 		}
 
