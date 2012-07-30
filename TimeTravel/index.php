@@ -57,7 +57,7 @@ A:hover {text-decoration: underline;}
 	 	$diplayDate = $_SESSION['diplayDate'];
  	} else {
  		$chosenDate = date('Y-m-d');
- 		$chosenDate = date('Y-m-d G:i:s.u');
+ 		$diplayDate = date('Y-m-d G:i:s.u');
  	}
  
  ?>

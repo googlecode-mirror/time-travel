@@ -82,9 +82,8 @@
 			loadRandomDateStatusUpdates();
  		else {
  			$.get("/includes/mainContentArea.php", function(data) {
- 				  $("#contentArea1").html(data);
- 				 $("#displayDate").html($("#diplayDateInput").val());
- 					updateDatePicker();
+ 				 $("#contentArea1").html(data);
+ 				updateDatePicker();
  			});
  		}
 	}
@@ -93,21 +92,18 @@
 		location = "testing/index.html";
 	}
 
-	function loadContentForDate(){
-		//$("#datepicker").select(function(dateText, inst){
-		//	loadContentForDate(dateText);
-		//});
-
-		//$("#year").val(dateText.substring(0, 4));
-		//$("#month").val(dateText.substring(5, 7));
-		
-		var theDate = $("#datepicker").datepicker("getDate");
-		theDate = $.datepicker.formatDate('yy-mm-dd', $("#datepicker").datepicker("getDate"));
-
+	function loadContentForDate(targetDate){
+		var theDate = null;
+		if (targetDate == null){
+			theDate = $("#datepicker").datepicker("getDate");
+			theDate = $.datepicker.formatDate('yy-mm-dd', $("#datepicker").datepicker("getDate"));
+		} else {
+			theDate = targetDate;
+		}
 		$.get("/includes/mainContentArea.php?dateText=" +theDate, function(data) {
 			  $("#contentArea1").html(data);
-			  $("#displayDate").html($("#diplayDateInput").val());
-			  updateDatePicker();
+			  updateDatePicker(false);
+			  //alert($("#chosenDate").val());
 		});
 	}
 
@@ -116,7 +112,7 @@
 		theDate = $.datepicker.formatDate('yy-mm-dd', $("#datepicker").datepicker("getDate"));
 		$("#displayDate").html($("#diplayDateInput").val());
 		$("#contentArea1").load("includes/facebookContent.php?dateText="+theDate, function(){
-			updateDatePicker();
+			updateDatePicker(false);
 		});
 	}
 
@@ -131,13 +127,17 @@
 	function doTimeTravel(){
 		var targetDate = $("#year").val()+"-"+$("#month").val()+"-01";
 		$("#datepicker").datepicker("setDate", targetDate);
+		$("#chosenDate").val(targetDate);
 		loadContentForDate(targetDate);
 	}
 
-	function updateDatePicker(){
+	function updateDatePicker(changeDatepicker){
 		var chosenDate = $("#chosenDate").val();
-		$("#datepicker").datepicker("setDate", chosenDate);
-		
+
+		if (changeDatepicker == null){
+			$("#datepicker").datepicker("setDate", chosenDate);
+		}
+
 		$("#displayDate").html($("#diplayDateInput").val());
 		console.log("chosenDate: "+chosenDate);
 		if (chosenDate != null){
