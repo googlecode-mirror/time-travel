@@ -217,19 +217,24 @@ class BusinessLogic{
 			
 		return self::$responder->constructResponse(null);
 	}
-	
-	public function rotatePicture($parameters){
 
+	public function rotatePicture($parameters){
+		set_time_limit(0);
 		$pictureDAO = new PictureDAO();
 		$pictureId = $parameters["pictureId"];
 		$picture = $pictureDAO->getPictureById($pictureId);
-			
+		
+		Logger::log("username: ".$_SESSION["username"]);
 		$username = $_SESSION["username"];
 		$rootDir = dirname(dirname(__FILE__)) .'/pictures/'. $username. '/main/';
 		$filepath = $rootDir. $picture->filename;
-			
+		
+		Logger::log("filepath: ".$filepath);
+		
 		$image1 = @imagecreatefromjpeg($filepath);
 
+		Logger::log("created image");
+		
 		$direction = $parameters["direction"];
 		$degrees = 180;
 		if ($direction == "left"){
@@ -238,12 +243,23 @@ class BusinessLogic{
 			$degrees = -90;
 		}
 			
-		$image = @imagerotate($image1, $degrees, 0);
+		Logger::log("before imagerotate");
+		
+		try {
+			$image = @imagerotate($image1, $degrees, 0);
+		} catch (Exception $e) {
+			Logger::log($e->getMessage());
+			throw new Exception();
+		}
+		
 
+		Logger::log("after image rotate");
+		
 		imagejpeg($image, $filepath, 100);
 
 		error_log("FILE ".$filepath);
 		imagedestroy($image);
+		Logger::log("done image");
 
 		/* $payload = file_get_contents($filepath);
 			$picture->payload = $payload;
