@@ -5,8 +5,7 @@
 	date_default_timezone_set('Africa/Johannesburg');
  	
 	$facebook_url =  GlobalConfig::facebook_url;
-	
- 	error_reporting(E_ERROR | E_PARSE);
+
  	session_start();
  	
  	$hasFbToken = false;
@@ -110,6 +109,8 @@
 				showLoading(false);
 				alert("Your status updates are here now. Click on Random to see them.");
 				window.reload();
+			} if (errorCode == 2) {
+				saveTokenToSession(token);
 			} else {
 				showLoading(false);
 				showMessage($(resultData).find("errMessage").text(), "error");
