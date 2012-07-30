@@ -10,7 +10,6 @@ function rotatePicture(pictureId, direction, callback, src){
 		//alert(resultData);
 		var errorCode = $(resultData).find("code").text();
 		if (errorCode == 0) {
-
 			if (typeof callback == "function"){
 				callback(src);
 			}
