@@ -300,6 +300,8 @@ $(function() {
 			if (isset($_GET["dateText"])){
 				$theDate = $_GET["dateText"];
 				$dayToDisplay = $dayDAO->getIdForDay($userid, $theDate);
+				$chosenDate = date("Y-m-d", strtotime($theDate));
+				$diplayDate = date("Y F j l", strtotime($theDate));
 			} else {
 				$dayToDisplay = $dayDAO->getRandomDay($userid);
 			}
@@ -372,8 +374,11 @@ $(function() {
 		?>
 		
 		<script type="text/javascript">
-				$("#chosenDate").val("<?php echo$chosenDate?>");
-				$("#diplayDateInput").val("<?php echo$diplayDate?>");
+		//$(document).ready(function()	{
+			//alert("<?php echo$chosenDate?>");
+			$("#chosenDate").val("<?php echo$chosenDate?>");
+			$("#diplayDateInput").val("<?php echo$diplayDate?>");
+		//});
 		</script>
 		
 		 
@@ -417,15 +422,15 @@ $(function() {
 </div>	
 
 <script>
-	$(function() {
-		$( "#picturedatepicker" ).datepicker({
-			numberOfMonths: 1,
-			showButtonPanel: true,
-		 	onSelect: function(dateText, inst) { 
-		 		$("#pictureDate").html(dateText);
-		   }
-		});
-	});
+	//$(function() {
+	//	$( "#picturedatepicker" ).datepicker({
+		//	numberOfMonths: 1,
+			//showButtonPanel: true,
+		 	//onSelect: function(dateText, inst) { 
+		 	//	$("#pictureDate").html(dateText);
+		  // }
+	//	});
+	//});
 
-	$('#picturedatepicker').datepicker("option", "dateFormat", "yy-mm-dd" );
+	//$('#picturedatepicker').datepicker("option", "dateFormat", "yy-mm-dd" );
 </script>
