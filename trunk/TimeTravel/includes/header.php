@@ -2,16 +2,15 @@
 	<tr>
 		<td></td>
 		<td align="center" width="40%">
-			<div style="font-size: 1em; color: white; font-style: italic; float: left; display: <?php echo $loggedIn ? 'block' : 'none'?>;"><?php echo $name?>, enjoy your time travel!</div>
-			
+		<?php if (isset($_SESSION['name'])) {	?>
+			<div style="font-size: 1em; color: white; font-style: italic; float: left; display: block;"><?php echo $name?>, enjoy your time travel!</div>
+		<?php } ?>
 			<div style="color: white; font-size: 1.6em; font-weight: bold; font-family: verdana;">Time Travel<div>
 			
 		</td>
 		<td width="15%" align="center">
 		
 		<?php
-			session_start();
-			
 			if (!isset($_SESSION['name'])) {
 		?>
 			<a id="loginUrl" href="#" class="header" onclick="showLoginDlg();"><img src="images/login.png" border="0"/>Login</a>

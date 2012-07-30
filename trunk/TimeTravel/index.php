@@ -34,6 +34,7 @@ A:hover {text-decoration: underline;}
 <body style="font-size: 75%" >
  <?php	include_once ("includes/header.php"); 
  		include_once ("includes/application.specific.overlays.php");
+ 		date_default_timezone_set('Africa/Johannesburg');
  
  	$facebookAccessToken = "";
  	$mainContentType = "";
@@ -50,10 +51,14 @@ A:hover {text-decoration: underline;}
  	} else if (isset($_GET["code"])){
  		$facebookCode = $_GET["code"];
  	}
-
- 	
- 	$chosenDate = $_SESSION['chosenDate'];
- 	$diplayDate = $_SESSION['diplayDate'];
+	
+ 	if (isset($_SESSION['chosenDate'])){
+	 	$chosenDate = $_SESSION['chosenDate'];
+	 	$diplayDate = $_SESSION['diplayDate'];
+ 	} else {
+ 		$chosenDate = date('Y-m-d');
+ 		$chosenDate = date('Y-m-d G:i:s.u');
+ 	}
  
  ?>
  <input id="chosenDate" type="hidden" value="<?php echo$chosenDate?>"/>

@@ -29,7 +29,6 @@ class UserDAO {
 		try {
 			$con = new PDO(GlobalConfig::db_pdo_connect_string, GlobalConfig::db_username, GlobalConfig::db_password);
 			$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-			$dbName = GlobalConfig::db_name;
 			$stmt = $con->prepare("insert into status_update (id, theDate, message, userid, dayid) values (:id, :theDate, :message, :userid, :dayid)");
 			$stmt->bindParam(':userid', $userid);
 			$stmt->bindParam(':theDate', $theDate);
@@ -39,9 +38,8 @@ class UserDAO {
 	
 			$stmt->execute();
 	
-	
 		} catch (PDOException $e) {
-			print "Error!: " . $e->getMessage() . "<br/>";
+			error_log($e->getMessage());
 			throw new Exception('018');
 		}
 	

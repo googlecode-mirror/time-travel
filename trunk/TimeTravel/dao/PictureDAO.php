@@ -1,6 +1,7 @@
 <?php
 require_once(dirname(dirname(__FILE__)) .'/conf.php');
 require_once(dirname(dirname(__FILE__)) .'/viewbean/Picture.php');
+require_once(dirname(dirname(__FILE__)) .'/Logger.php');
 
 class PictureDAO {
 
@@ -169,24 +170,40 @@ class PictureDAO {
 	
 	public function createDay($userid, $date){
 		error_log("in createDay...");
+		
 		$dayId = $this->isDayForUserExisting($userid, $date);
-		if ($dayId == -1){
-			$dayId = $this->getNextAutoIncrementValueForTable("user_day");
-		} else {
+		if ($dayId != -1){
+			Logger::log("day exists -- > ". $dayId);
 			return $dayId;
 		}
+		
 		try {
 			$con = new PDO(GlobalConfig::db_pdo_connect_string, GlobalConfig::db_username, GlobalConfig::db_password);
 			$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-			$stmt = $con->prepare("insert into user_day values (:dayId, :theDate, :userid)");
-			$stmt->bindParam(':dayId', $dayId);
+				
+			$stmt = $con->prepare("insert into user_day (theDate, userid) values (:theDate, :userid)");
 			$stmt->bindParam(':theDate', $date);
 			$stmt->bindParam(':userid', $userid);
 
-			$stmt->execute();
-			error_log("[PictureDAO] done creating day..");
+				
+			try {
+				$con->beginTransaction();
+				$stmt->execute();
+				$dayId = $con->lastInsertId();
+				$con->commit();
+				Logger::log($dayId);
+
+			} catch(PDOExecption $e) {
+				$con->rollback();
+				error_log("Error: ".$e->getMessage());
+				Logger::log("ERROR: ".$e->getMessage());
+				throw new Exception('005');
+			}
+				
+			Logger::log("[PictureDAO] done creating day..");
 		} catch (PDOException $e) {
 			error_log("Error: ".$e->getMessage());
+			Logger::log("ERROR: ".$e->getMessage());
 			throw new Exception('005');
 		}
 	
@@ -197,6 +214,7 @@ class PictureDAO {
 	public function getNextAutoIncrementValueForTable($tableName){
 		try {
 			$con = new PDO(GlobalConfig::db_pdo_connect_string, GlobalConfig::db_username, GlobalConfig::db_password);
+			$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			$dbName = GlobalConfig::db_name;
 			$stmt = $con->prepare("SELECT Auto_increment as id FROM information_schema.tables WHERE table_name=:tableName and table_schema=:db_name");
 			$stmt->bindParam(':tableName', $tableName);
@@ -221,7 +239,7 @@ class PictureDAO {
 	public function isPictureForUserExisting($dayId, $picture){
 		try {
 			$con = new PDO(GlobalConfig::db_pdo_connect_string, GlobalConfig::db_username, GlobalConfig::db_password);
-			$dbName = GlobalConfig::db_name;
+			$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			$stmt = $con->prepare("select * from picture where dayid=:dayid and filename = :filename");
 			$stmt->bindParam(':dayid', $dayId);
 			$stmt->bindParam(':filename', $picture->filename);
@@ -247,7 +265,7 @@ class PictureDAO {
 		error_log("TIME TAKEN 2 : ".$date);
 		try {
 			$con = new PDO(GlobalConfig::db_pdo_connect_string, GlobalConfig::db_username, GlobalConfig::db_password);
-			$dbName = GlobalConfig::db_name;
+			$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			$stmt = $con->prepare("select * from user_day where userid=:userid and date(theDate) = :theDate");
 			$stmt->bindParam(':theDate', $date);
 			$stmt->bindParam(':userid', $userid);

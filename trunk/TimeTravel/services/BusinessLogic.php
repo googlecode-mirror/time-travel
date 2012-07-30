@@ -7,6 +7,8 @@ require_once(dirname(dirname(__FILE__)) . '/dao/DayDAO.php');
 require_once(dirname(dirname(__FILE__)) . '/errorCodes.php');
 require_once(dirname(dirname(__FILE__)) . '/dto/Action.php');
 require_once(dirname(dirname(__FILE__)) .'/conf.php');
+require_once(dirname(dirname(__FILE__)) .'/Logger.php');
+
 date_default_timezone_set('Africa/Johannesburg');
 
 class BusinessLogic{
@@ -68,7 +70,7 @@ class BusinessLogic{
 				$state = $_SESSION["nextState"];
 			}
 			
-			self::log("STATE: ".$state);
+			Logger::log("STATE: ".$state);
 			
 			switch ($state){
 				case "saveFbToken": $userDAO->saveFbToken($_SESSION["userid"], $accessToken);
@@ -97,10 +99,6 @@ class BusinessLogic{
 		}
 
 		return self::$responder->constructResponse(null);
-	}
-	
-	public static function log($output){
-		file_put_contents((dirname(dirname(__FILE__)) ."/testing.text"), $output ."\n", FILE_APPEND | LOCK_EX);
 	}
 	
 	
@@ -151,40 +149,6 @@ class BusinessLogic{
 			} else {
 				return true;
 			}
-			
-			
-			/* while (isset($url)){
-				error_log("fetching statuses from fb...");
-				self::log("fetching statuses from fb...");
-				$response = file_get_contents($url);
-				error_log("STATUS UPDATE: ".$response);
-				self::log("status: ".$response);
-				$statuses = json_decode($response);
-				$statusesArray = $statuses->{'data'};
-
-				foreach ($statusesArray as $status){
-					set_time_limit(30);
-					self::log("saving...");
-					$gmtTimezone = new DateTimeZone('Africa/Johannesburg');
-					$myDateTime = new DateTime($status->{'updated_time'}, $gmtTimezone);
-						
-					$theDate = date('c', $myDateTime->format('U') + 1);
-					$theDate = date('Y-m-d H:i:s', strtotime($theDate));
-					error_log("DATE: ".$theDate);
-					$message = $status->{'message'};
-					$messageId = $status->{'id'};
-						
-					$dayId = $pictureDAO->createDay($userid, $theDate);
-					self::log("saved day...".$dayId);
-					$userDAO->saveStatusUpdate($userid, $theDate, $message, $messageId, $dayId);
-					self::log("saved status...");
-				} 
-
-				if (isset($statuses->paging->{'next'})){
-					$url = $statuses->paging->{'next'};
-				}
-			}*/
-
 		
 	}
 	
