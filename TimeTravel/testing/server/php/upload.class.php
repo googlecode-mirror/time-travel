@@ -10,10 +10,11 @@
  * http://www.opensource.org/licenses/MIT
  */
 
-date_default_timezone_set('Europe/Minsk');
+date_default_timezone_set('Africa/Johannesburg');
 require_once((dirname(dirname(dirname(dirname(__FILE__))))) .'/viewbean/Picture.php');
 require_once((dirname(dirname(dirname(dirname(__FILE__))))) .'/dao/PictureDAO.php');
-//error_reporting(E_ERROR | E_PARSE);
+require_once((dirname(dirname(dirname(dirname(__FILE__))))) .'/Logger.php');
+
 
 class UploadHandler
 {
@@ -21,12 +22,12 @@ class UploadHandler
 
     function __construct($options=null) {
     	session_start();
+    	Logger::log("username: ".$_SESSION['username']);
     	$this->options = array(
             'script_url' => $this->getFullUrl().'/',
             //'upload_dir' => dirname($_SERVER['SCRIPT_FILENAME']).'/files/',
             //'upload_url' => $this->getFullUrl().'/files/',
-
-        		
+        	
         	'upload_dir' => (dirname(dirname(dirname(dirname(__FILE__))))) . '/pictures/'. $_SESSION['username'] .'/temp/',
         	'upload_url' => $this->getFullUrl().'/temp/',
             
