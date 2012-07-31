@@ -32,6 +32,7 @@
 
 
 <div id="datepicker"></div>
+<div id="picturedatepicker"></div>
 
 <br/>
 <div id="displayDate" style="font-size: 1.4em; color: #C0C0C0;"></div>
