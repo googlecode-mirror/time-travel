@@ -70,6 +70,7 @@ $(document).ready(function()	{
 		$("#picCaption").blur(function(){
 			$("#captionValue").val($(this).val());
 		});
+
 });
 
 function doChangePictureDate(){
@@ -84,13 +85,17 @@ function doChangePictureDate(){
 	parms["dateandtime"] = $("#pictureDate").html() + " "+$(".hourTempl").filter(".working").val()+":"+$(".minuteTempl").filter(".working").val();
 
 	$.post(url, parms, function(resultData) {
+		$("#dateTakenOverlay").dialog('close');
 		resultData = parseResult(resultData);
 		var errorCode = $(resultData).find("code").text();
 		if (errorCode == 0) {
-			//$(img).parent().parent().parent().find(".picDescription").html('"'+ parms["caption"] +'"');
+			loadContentForDate($("#pictureDate").html());
+			$("#chosenDate").val($("#pictureDate").html());
+			updateDatePicker();
 		} else {
 			alert($(resultData).find("errMessage").text());
 		}
+		//$("#dateTakenOverlay").dialog("close");
 	});
 }
 
@@ -269,18 +274,29 @@ function loadThisImage(imageId, imageUrl){
     };
 }
 
-
 function showDateTakenOverlay(){
+	
+	if ($("#dateTakenOverlay").find("div[id='picturedatepicker']").size() == 0){
+		$("#dateTakenOverlay").html($("#picturedatepicker"));
+		$("#dateTakenOverlay").append($("#dateTakenDates"));
+		$("#dateTakenDates").fadeIn("normal");
+
+		$("#picturedatepicker").datepicker({
+			numberOfMonths: 1,
+			showButtonPanel: true,
+			dateFormat: "yy-mm-dd",
+		 	onSelect: function(dateText, inst) { 
+		 		$("#dateTakenDates #pictureDate").html(dateText);
+		   }
+		});
+	}
+
 	$("#dateTakenOverlay").dialog('open');
+	$("#picturedatepicker").datepicker("setDate", $("#chosenDate").val());
+	$("#dateTakenDates #pictureDate").html($("#chosenDate").val());
+
 }
 
-
-$(function() {
-		$( "#tabs" ).tabs();
-		$( ".tabs-bottom .ui-tabs-nav, .tabs-bottom .ui-tabs-nav > *" )
-			.removeClass( "ui-corner-all ui-corner-top" )
-			.addClass( "ui-corner-bottom" );
-	});
 </script>
 	
 	<?php
@@ -411,26 +427,12 @@ $(function() {
 </div>
 
 <div id="dateTakenOverlay" style="display: none;" align="center">
-		<div id="picturedatepicker"></div>
 		<br/>
-		<div><span style="font-size: 1.1em; color: grey;">The picture was taken on </span> <span id="pictureDate" style="font-size: 1.3em; color: grey; font-weight: bold;"></span> at
-		<span id="timeSelectorDiv">
-			
-		</span>
 		
-		</div>
-</div>	
+</div>
 
-<script>
-	//$(function() {
-	//	$( "#picturedatepicker" ).datepicker({
-		//	numberOfMonths: 1,
-			//showButtonPanel: true,
-		 	//onSelect: function(dateText, inst) { 
-		 	//	$("#pictureDate").html(dateText);
-		  // }
-	//	});
-	//});
+<div id="dateTakenDates" style="display: none;">
+	<span style="font-size: 1.1em; color: grey;">The picture was taken on </span> <span id="pictureDate"
+		style="font-size: 1.3em; color: grey; font-weight: bold;"></span> at <span id="timeSelectorDiv"> </span>
 
-	//$('#picturedatepicker').datepicker("option", "dateFormat", "yy-mm-dd" );
-</script>
+</div>

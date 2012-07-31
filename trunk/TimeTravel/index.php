@@ -94,8 +94,13 @@ A:hover {text-decoration: underline;}
 		<div id="loggedInContentAread" style="width: 850px; display: <?php echo$loggedIn? "none" : "block" ?>;">
 			<br/><br/><br/><br/>
 			<div class="formlabel" height="400px">
-				Welcome to Time Travel! If you don't have an account you might wanna signup to start travelling through time in your lifetime. Or, if you 
-				already have an account, login above to experience some dejavu!
+				<p>The whole idea of taking pictures is to capture the moment so that you may reminisce about it years after it was taken. But, why do you have them all over the place? Think about the 
+					most precious pictures taken when you were growing up...what happened to them? What about the ones you took on that vacation 5 years ago? 
+					"I have them somewhere...", I hear you say. Besides the fact that you might lose them, when do you ever see them? When you stumble across them in your old laptop while 
+					looking for your the CV?</p>
+					
+					<p>Well, Timetravel gives you a place where you can upload all your precious memories into one portal.... If you don't have an account you might wanna signup to start travelling through time in your lifetime. Or, if you 
+				already have an account, login above to experience some dejavu!</p>
 			</div>
 		</div>
 		
