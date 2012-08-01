@@ -71,6 +71,10 @@ $(document).ready(function()	{
 			$("#captionValue").val($(this).val());
 		});
 
+
+		$(".selectInput").change(function(){
+			updateSelectedTimeForNewDate($(this));
+		});
 });
 
 function doChangePictureDate(){
@@ -82,7 +86,7 @@ function doChangePictureDate(){
 	parms["action"] = "updatePictureCaption";
 	parms["caption"] = $("#captionValue").val();
 	parms["pictureId"] = imageId;
-	parms["dateandtime"] = $("#pictureDate").html() + " "+$(".hourTempl").filter(".working").val()+":"+$(".minuteTempl").filter(".working").val();
+	parms["dateandtime"] = $("#pictureDate").html() + " "+$("#selectedTimeForNewDate").val();
 
 	$.post(url, parms, function(resultData) {
 		$("#dateTakenOverlay").dialog('close');
@@ -90,7 +94,7 @@ function doChangePictureDate(){
 		var errorCode = $(resultData).find("code").text();
 		if (errorCode == 0) {
 			loadContentForDate($("#pictureDate").html());
-			$("#chosenDate").val($("#pictureDate").html());
+			params.chosenDate = $("#pictureDate").html();
 			updateDatePicker();
 		} else {
 			alert($(resultData).find("errMessage").text());
@@ -292,11 +296,16 @@ function showDateTakenOverlay(){
 	}
 
 	$("#dateTakenOverlay").dialog('open');
-	$("#picturedatepicker").datepicker("setDate", $("#chosenDate").val());
-	$("#dateTakenDates #pictureDate").html($("#chosenDate").val());
+	$("#picturedatepicker").datepicker("setDate", params.chosenDate);
+	$("#dateTakenDates #pictureDate").html(params.chosenDate);
 
 }
 
+
+function updateSelectedTimeForNewDate(control){
+	var theTime = $(control).parent().find(".hourTempl").val()+":"+$(control).parent().find(".minuteTempl").val();
+	$("#selectedTimeForNewDate").val(theTime);
+}
 </script>
 	
 	<?php
@@ -322,7 +331,7 @@ function showDateTakenOverlay(){
 				$dayToDisplay = $dayDAO->getRandomDay($userid);
 			}
 			
-			//error_log("date : ". $dayToDisplay);
+			error_log("date : ". $dayToDisplay);
 			
 			$pictureDAO = new PictureDAO();
 			$pictures = $pictureDAO->getAllPicturesForDay($dayToDisplay);
@@ -392,8 +401,8 @@ function showDateTakenOverlay(){
 		<script type="text/javascript">
 		//$(document).ready(function()	{
 			//alert("<?php echo$chosenDate?>");
-			$("#chosenDate").val("<?php echo$chosenDate?>");
-			$("#diplayDateInput").val("<?php echo$diplayDate?>");
+			params.chosenDate = "<?php echo$chosenDate?>";
+			params.diplayDateInput = "<?php echo$diplayDate?>";
 		//});
 		</script>
 		
@@ -430,6 +439,8 @@ function showDateTakenOverlay(){
 		<br/>
 		
 </div>
+
+<input type="hidden" id="selectedTimeForNewDate">
 
 <div id="dateTakenDates" style="display: none;">
 	<span style="font-size: 1.1em; color: grey;">The picture was taken on </span> <span id="pictureDate"

@@ -61,11 +61,15 @@ A:hover {text-decoration: underline;}
  	}
  
  ?>
- <input id="chosenDate" type="hidden" value="<?php echo$chosenDate?>"/>
- <input id="diplayDateInput" type="hidden" value="<?php echo$diplayDate?>"/>
- <input id="mainContentType" type="hidden" value="<?php echo$mainContentType?>"/>
- <input id="fbToken" type="hidden" value="<?php echo$facebookAccessToken?>"/>
- <input id="fbCode" type="hidden" value="<?php echo$facebookCode?>"/>
+ 
+ <script type="text/javascript">
+	var params = {};
+	params.chosenDate = "<?php echo$chosenDate?>";
+	params.diplayDateInput = "<?php echo$diplayDate?>";
+	params.mainContentType = "<?php echo$mainContentType?>";
+	params.fbToken = "<?php echo$facebookAccessToken?>";
+	params.fbCode = "<?php echo$facebookCode?>";
+ </script>
  
  <div id="loadingPic" style="display: none; position:absolute; left: 0px; top:0px; height:100%; width: 100%; text-align: center;
            background-image:url('images/translucent.gif'); z-index: 1000;">

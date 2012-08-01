@@ -24,7 +24,7 @@ $(document).ready(function() {
 	setEnterAction($("#password"), loginUser);
 	
 	
-	if ($("#mainContentType").val() == "facebook"){
+	if (params.mainContentType == "facebook"){
 		loadStatusUpdate(); 
 	} else {
 		loadPictures();
@@ -38,14 +38,13 @@ function loadStatusUpdate(){
 }
 
 function updateDatePicker(){
-	var chosenDate = $("#chosenDate").val();
-	$("#datepicker").datepicker("setDate", chosenDate);
+	$("#datepicker").datepicker("setDate", params.chosenDate);
 	
-	$("#displayDate").html($("#diplayDateInput").val());
-	console.log("chosenDate: "+chosenDate);
-	if (chosenDate != null){
-		$("#year").val(chosenDate.substring(0, 4));
-		$("#month").val(chosenDate.substring(5, 7));
+	$("#displayDate").html(params.diplayDateInput);
+	console.log("chosenDate: "+params.chosenDate);
+	if (params.chosenDate != null){
+		$("#year").val(params.chosenDate.substring(0, 4));
+		$("#month").val(params.chosenDate.substring(5, 7));
 		
 	}
 }

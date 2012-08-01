@@ -15,7 +15,7 @@
 			numberOfMonths: 1,
 			showButtonPanel: true,
 		 	onSelect: function(dateText, inst) { 
-		 		if ($("#mainContentType").val() == "facebook"){
+		 		if (params.mainContentType == "facebook"){
 					loadStatusUpdatesForDate();
 		 		} else{
 			 		showLoading(true);
@@ -79,7 +79,7 @@
 <script type="text/javascript">
 	function reloadPage(){
 		showLoading(true);
-		if ($("#mainContentType").val() == "facebook")
+		if (params.mainContentType == "facebook")
 			loadRandomDateStatusUpdates();
  		else {
  			$.get("/includes/mainContentArea.php", function(data) {
@@ -111,7 +111,7 @@
 	function loadStatusUpdatesForDate(){
 		var theDate = $("#datepicker").datepicker("getDate");
 		theDate = $.datepicker.formatDate('yy-mm-dd', $("#datepicker").datepicker("getDate"));
-		$("#displayDate").html($("#diplayDateInput").val());
+		$("#displayDate").html(params.diplayDateInput);
 		$("#contentArea1").load("includes/facebookContent.php?dateText="+theDate, function(){
 			updateDatePicker(false);
 		});
@@ -119,7 +119,7 @@
 
 	function loadRandomDateStatusUpdates(){
 		$("#contentArea1").load("includes/facebookContent.php", function(){
-			$("#displayDate").html($("#diplayDateInput").val());
+			$("#displayDate").html(params.diplayDateInput);
 			updateDatePicker();
 		});
 	}
@@ -128,22 +128,20 @@
 	function doTimeTravel(){
 		var targetDate = $("#year").val()+"-"+$("#month").val()+"-01";
 		$("#datepicker").datepicker("setDate", targetDate);
-		$("#chosenDate").val(targetDate);
+		params.chosenDate = targetDate;
 		loadContentForDate(targetDate);
 	}
 
 	function updateDatePicker(changeDatepicker){
-		var chosenDate = $("#chosenDate").val();
-
 		if (changeDatepicker == null){
-			$("#datepicker").datepicker("setDate", chosenDate);
+			$("#datepicker").datepicker("setDate", params.chosenDate);
 		}
 
-		$("#displayDate").html($("#diplayDateInput").val());
-		console.log("chosenDate: "+chosenDate);
-		if (chosenDate != null){
-			$("#year").val(chosenDate.substring(0, 4));
-			$("#month").val(chosenDate.substring(5, 7));
+		$("#displayDate").html(params.diplayDateInput);
+		console.log("chosenDate: "+params.chosenDate);
+		if (params.chosenDate != null){
+			$("#year").val(params.chosenDate.substring(0, 4));
+			$("#month").val(params.chosenDate.substring(5, 7));
 			
 		}
 	}

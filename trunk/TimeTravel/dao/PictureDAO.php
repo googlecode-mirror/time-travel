@@ -6,7 +6,7 @@ require_once(dirname(dirname(__FILE__)) .'/Logger.php');
 class PictureDAO {
 
 	public function updatePictureTimeTaken($pictureId, $dayid, $timetaken){
-		error_log("in updatePictureTimeTaken ".$timetaken);
+		error_log("in updatePictureTimeTaken ".$timetaken." new dayid: ".$dayid);
 		try {
 			if (($pictureId == null) || ($pictureId == "")){
 				throw new Exception('004');
