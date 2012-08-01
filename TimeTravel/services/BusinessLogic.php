@@ -19,6 +19,7 @@ class BusinessLogic{
 		self::$responder = new Responder;
 	}
 	
+	
 	/*Moves the pictures for user from the temp folder to the main*/
 	public function moveUserPictures($parameters){
 		try{
@@ -209,7 +210,14 @@ class BusinessLogic{
 		if (isset($timetaken) && ($timetaken != "")){
 			error_log("timetaken is set: ".$timetaken);
 			$dayid = $pictureDAO->createDay($_SESSION["userid"], $timetaken);
+			
+			$picture = $pictureDAO->getPictureById($pictureId);
+			
 			$pictureDAO->updatePictureTimeTaken($pictureId, $dayid, $timetaken);
+			
+			//we need to delete the day that the picture fell in if it's not used anymore
+			$dayDAO = new DayDAO();
+			$dayDAO->deleteDayIfUnused($picture->dayId);
 
 		} else if (isset($caption)){
 			$pictureDAO->updatePictureCaption($pictureId, $caption);

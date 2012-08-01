@@ -31,11 +31,11 @@
 			window.location = url;
 		});
 
-		if (($("#fbCode").val() != "") && ($("#fbToken").val() == "")){
-			var url = "https://graph.facebook.com/oauth/access_token?client_id=172468146218420&redirect_uri=<?php echo$facebook_url?>&client_secret="+ appsecret+"&code="+$("#fbCode").val();
+		if ((params.fbCode != "") && (params.fbToken == "")){
+			var url = "https://graph.facebook.com/oauth/access_token?client_id=172468146218420&redirect_uri=<?php echo$facebook_url?>&client_secret="+ appsecret+"&code="+params.fbCode;
 			$.post(url, null, function(resultData) {
 		 		splitString = resultData.split("=");
-		 		$("#fbToken").val(splitString[1]);
+		 		params.fbToken = splitString[1];
 		 		saveTokenToSession(splitString[1]);
 		 		$("#fbRegisterDiv").hide();
 		 		$("#fbLoginDiv").hide();
@@ -190,8 +190,8 @@
 	?>
 			
 			<script type="text/javascript">
-			$("#chosenDate").val("<?php echo$chosenDate?>");
-			$("#diplayDateInput").val("<?php echo$diplayDate?>");
+				params.chosenDate = "<?php echo$chosenDate?>";
+				params.diplayDateInput = "<?php echo$diplayDate?>";
 			</script>
 			
 			<div class="formlabel">
