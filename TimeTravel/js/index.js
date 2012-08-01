@@ -23,7 +23,6 @@ $(document).ready(function() {
 	//we set a function to be called when Enter is pressed
 	setEnterAction($("#password"), loginUser);
 	
-	
 	if (params.mainContentType == "facebook"){
 		loadStatusUpdate(); 
 	} else {

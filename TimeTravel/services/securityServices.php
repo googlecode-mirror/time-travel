@@ -1,8 +1,8 @@
 <?php
-require_once 'conf.php';
-require_once 'services/ResponseParser.php';
-require_once 'services/CommunicationServices.php';
-require_once 'viewbean/User.php';
+require_once(dirname(dirname(__FILE__)) .'/conf.php');
+require_once(dirname(dirname(__FILE__)) . '/services/ResponseParser.php');
+require_once(dirname(dirname(__FILE__)) .'/services/CommunicationServices.php');
+require_once(dirname(dirname(__FILE__)) .'/viewbean/User.php');
 
 class SecurityService  {
 
