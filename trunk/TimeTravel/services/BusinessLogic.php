@@ -1,5 +1,4 @@
 <?php
-
 require_once(dirname(dirname(__FILE__)) . '/services/securityServices.php');
 require_once(dirname(dirname(__FILE__)) . '/dao/PictureDAO.php');
 require_once(dirname(dirname(__FILE__)) . '/dao/UserDAO.php');
@@ -8,18 +7,19 @@ require_once(dirname(dirname(__FILE__)) . '/errorCodes.php');
 require_once(dirname(dirname(__FILE__)) . '/dto/Action.php');
 require_once(dirname(dirname(__FILE__)) .'/conf.php');
 require_once(dirname(dirname(__FILE__)) .'/Logger.php');
+require_once(dirname(dirname(__FILE__)) .'/services/Forker.php');
 
 date_default_timezone_set('Africa/Johannesburg');
 
 class BusinessLogic{
 	private static $responder;
-	
+
 	function __construct() {
 		session_start();
 		self::$responder = new Responder;
 	}
-	
-	
+
+
 	/*Moves the pictures for user from the temp folder to the main*/
 	public function moveUserPictures($parameters){
 		try{
@@ -27,29 +27,29 @@ class BusinessLogic{
 				$username = $_SESSION["username"];
 				error_log("username: ". $username);
 				$rootDir = dirname(dirname(__FILE__)) .'/pictures/'. $username;
-				
+
 				$filenames = glob($rootDir ."/temp/*.{jpg,gif,png,JPG,GIF,PNG}", GLOB_BRACE);
-				
-			
+
+					
 				foreach ($filenames as $filepath) {
 					set_time_limit(20);
 					$dest = $rootDir .'/main/'.basename($filepath);
 					if (!copy($filepath, $dest)){
 						throw new Exception("026");
 					}
-					
+
 					//we delete the temp
 					unlink($filepath);
-					
+
 					//we delete the thumbnail
 					unlink($rootDir.'/thumbnails/'.basename($filepath));
 				}
-				
-				
+
+
 			} else {
 				throw new Exception("026");
 			}
-			
+
 		} catch (PDOException $e) {
 			print "Error!: " . $e->getMessage() . "<br/>";
 			throw new Exception('032');
@@ -57,33 +57,33 @@ class BusinessLogic{
 		$responder = new Responder;
 		return $responder->constructResponse(null);
 	}
-	
+
 	public function saveTokenToSession($parameters){
 		try {
 			$accessToken = $parameters["access_token"];
 			$_SESSION["access_token"] = $accessToken;
-				
+
 			$userDAO = new UserDAO();
-			
+
 			if (!isset($_SESSION["nextState"])){
 				$_SESSION["nextState"] = $state = "saveFbToken";
 			} else {
 				$state = $_SESSION["nextState"];
 			}
-			
+
 			Logger::log("STATE: ".$state);
-			
+
 			switch ($state){
 				case "saveFbToken": $userDAO->saveFbToken($_SESSION["userid"], $accessToken);
 				$_SESSION["nextState"] = "updateFbDetails";
 				return self::$responder->constructLoopResponse("Facebook token saved successfully.");
-				
+
 				case "updateFbDetails": $this->updateFbDetails($accessToken);
 				$_SESSION["nextState"] = "retrieveAndSaveAllStatusUpdatesFromFb";
 				return self::$responder->constructLoopResponse("User details saved successfully.");
-				
+
 				case "retrieveAndSaveAllStatusUpdatesFromFb": $done = $this->retrieveAndSaveAllStatusUpdatesFromFb($accessToken);
-			
+					
 				if ($done){
 					unset($_SESSION["nextState"]);
 					unset($_SESSION["fbUrl"]);
@@ -92,7 +92,7 @@ class BusinessLogic{
 					return self::$responder->constructLoopResponse("Status updates saved successfully.");
 				}
 			}
-				
+
 		} catch (Exception $e){
 			unset($_SESSION["nextState"]);
 			unset($_SESSION["fbUrl"]);
@@ -101,58 +101,58 @@ class BusinessLogic{
 
 		return self::$responder->constructResponse(null);
 	}
-	
-	
+
+
 	private function retrieveAndSaveAllStatusUpdatesFromFb($accessToken){
 		error_log("in retrieveAndSaveAllStatusUpdatesFromFb...");
 
-			set_time_limit(0);
-			error_log("fetching statuses from fb...");
+		set_time_limit(0);
+		error_log("fetching statuses from fb...");
 			
 			
-			if (!isset($_SESSION["fbUrl"])){
-				$_SESSION["fbUrl"] = $url = "https://graph.facebook.com/me/statuses?access_token=".  $accessToken;
-			} else {
-				$url = $_SESSION["fbUrl"];
-			}
+		if (!isset($_SESSION["fbUrl"])){
+			$_SESSION["fbUrl"] = $url = "https://graph.facebook.com/me/statuses?access_token=".  $accessToken;
+		} else {
+			$url = $_SESSION["fbUrl"];
+		}
 			
 			
-			$response = file_get_contents($url);
+		$response = file_get_contents($url);
 			
-			$statuses = json_decode($response);
-			$statusesArray = $statuses->{'data'};
-			$userid = $_SESSION["userid"];
+		$statuses = json_decode($response);
+		$statusesArray = $statuses->{'data'};
+		$userid = $_SESSION["userid"];
 
-			$userDAO = new UserDAO();
-			$pictureDAO = new PictureDAO();
-			error_log("Reading the Status Array...");
-			$count = 0;
-			foreach ($statusesArray as $status){
-				set_time_limit(20);
-				
-				$gmtTimezone = new DateTimeZone('Africa/Johannesburg');
-				$myDateTime = new DateTime($status->{'updated_time'}, $gmtTimezone);
+		$userDAO = new UserDAO();
+		$pictureDAO = new PictureDAO();
+		error_log("Reading the Status Array...");
+		$count = 0;
+		foreach ($statusesArray as $status){
+			set_time_limit(20);
 
-				$theDate = date('c', $myDateTime->format('U') + 1);
-				$theDate = date('Y-m-d H:i:s', strtotime($theDate));
-				
-				$message = $status->{'message'};
-				$messageId = $status->{'id'};
+			$gmtTimezone = new DateTimeZone('Africa/Johannesburg');
+			$myDateTime = new DateTime($status->{'updated_time'}, $gmtTimezone);
 
-				$dayId = $pictureDAO->createDay($userid, $theDate);
-				$userDAO->saveStatusUpdate($userid, $theDate, $message, $messageId, $dayId);
-			} 
+			$theDate = date('c', $myDateTime->format('U') + 1);
+			$theDate = date('Y-m-d H:i:s', strtotime($theDate));
 
-						
-			if (isset($statuses->paging->{'next'})){
-				$_SESSION["fbUrl"] = $statuses->paging->{'next'};
-				return false;
-			} else {
-				return true;
-			}
-		
+			$message = $status->{'message'};
+			$messageId = $status->{'id'};
+
+			$dayId = $pictureDAO->createDay($userid, $theDate);
+			$userDAO->saveStatusUpdate($userid, $theDate, $message, $messageId, $dayId);
+		}
+
+
+		if (isset($statuses->paging->{'next'})){
+			$_SESSION["fbUrl"] = $statuses->paging->{'next'};
+			return false;
+		} else {
+			return true;
+		}
+
 	}
-	
+
 	private function updateFbDetails($accessToken){
 		$response = file_get_contents("https://graph.facebook.com/me?access_token=".  $accessToken);
 		error_log("FB USER INFO: ".$response);
@@ -160,46 +160,46 @@ class BusinessLogic{
 			
 		$securityServices = new SecurityService;
 		$user = $securityServices->getUserById($_SESSION["userid"]);
-		
+
 		error_log("userid: ". $_SESSION["userid"]);
-		
+
 		$birthday = null;
 		if (isset($fbuser->{'birthday'})){
 			$birthday = $fbuser->{'birthday'};
 			$birthday = date("m/d/Y", strtotime($birthday));
 			$birthday = date("Y-m-d", strtotime ($birthday));
 		}
-		
+
 		$gender = null;
 		if (isset($fbuser->{'gender'})){
 			$gender = $fbuser->{'gender'};
 		}
-		
+
 		$location = null;
 		if (isset($fbuser->{'location'}->{'name'})){
 			$location = $fbuser->{'location'}->{'name'};
 		}
-		
+
 		$work = null;
 		if (isset($fbuser->{'work'}[0]->{'employer'}->{'name'})){
 			$work = $fbuser->{'work'}[0]->{'employer'}->{'name'};
 		}
-		
-		
+
+
 		$timezone = null;
 		if (isset($fbuser->{'timezone'})){
 			$timezone = $fbuser->{'timezone'};
 		}
-		
-		
+
+
 		error_log("birthday : ". $birthday);
-		
+
 		$securityServices->updateUserDetails($user->id, $user->name, $user->surname, $user->username, $user->email, $gender, $user->cellphone, $location, $work, $birthday, $timezone);
 
 	}
-	
+
 	public function updatePictureCaption($parameters){
-		
+
 		error_log("in updatePictureCaption");
 
 		$pictureDAO = new PictureDAO();
@@ -210,11 +210,11 @@ class BusinessLogic{
 		if (isset($timetaken) && ($timetaken != "")){
 			error_log("timetaken is set: ".$timetaken);
 			$dayid = $pictureDAO->createDay($_SESSION["userid"], $timetaken);
-			
+
 			$picture = $pictureDAO->getPictureById($pictureId);
-			
+
 			$pictureDAO->updatePictureTimeTaken($pictureId, $dayid, $timetaken);
-			
+
 			//we need to delete the day that the picture fell in if it's not used anymore
 			$dayDAO = new DayDAO();
 			$dayDAO->deleteDayIfUnused($picture->dayId);
@@ -227,20 +227,30 @@ class BusinessLogic{
 	}
 
 	public function rotatePicture($parameters){
+		$parameters['action'] = 'rotateImage';
+		$parameters["username"] =  $_SESSION["username"];;
+		Forker::doPost($parameters);
+
+		return self::$responder->constructResponse(null);
+	}
+	
+	public function doImageRotate($parameters){
 		set_time_limit(0);
 		$pictureDAO = new PictureDAO();
 		$pictureId = $parameters["pictureId"];
 		$picture = $pictureDAO->getPictureById($pictureId);
 		
-		Logger::log("username: ".$_SESSION["username"]);
-		$username = $_SESSION["username"];
+		Logger::log("username: ".$parameters["username"]);
+		
+		$username = $parameters["username"];
+		
 		$rootDir = dirname(dirname(__FILE__)) .'/pictures/'. $username. '/main/';
 		$filepath = $rootDir. $picture->filename;
 		
 		Logger::log("filepath: ".$filepath);
 		
 		$image1 = @imagecreatefromjpeg($filepath);
-
+		
 		Logger::log("created image");
 		
 		$direction = $parameters["direction"];
@@ -260,26 +270,18 @@ class BusinessLogic{
 			throw new Exception();
 		}
 		
-
+		
 		Logger::log("after image rotate");
 		
 		imagejpeg($image, $filepath, 100);
-
+		
 		error_log("FILE ".$filepath);
 		imagedestroy($image);
 		Logger::log("done image");
-
-		/* $payload = file_get_contents($filepath);
-			$picture->payload = $payload;
-
-		$pictureDAO->editPicture($picture);
-		unlink($filepath); */
-
-		return self::$responder->constructResponse(null);
 	}
 
 	public function updatePassword($parameters){
-		
+
 		$securityServices = new SecurityService;
 		$capturedCurrentPassword = $parameters["currentPassword"];
 		$capturedNewPassword = $parameters["newPassword"];
@@ -306,7 +308,7 @@ class BusinessLogic{
 
 		return self::$responder->constructResponse("You password has been updated successfully.");
 	}
-	
+
 	private function verifyUserSession($parameters){
 		$securityServices = new SecurityService;
 		$securityServices->verifyUserSession($parameters);
@@ -413,22 +415,28 @@ class BusinessLogic{
 		return self::$responder->constructResponse($user);
 	}
 
-
+	public function getStatusUpdatesForUser($userid){
+		Logger::log("getting status updates for useid: ".$userid);
+	}
+	
 	public function loginUser($parameters){
 
 		$username = $parameters["username"];
 		$password = $parameters["password"];
 		$securityServices = new SecurityService;
 
-
 		$response = $securityServices->loginUser($username, $password);
 		
+		$parameters["action"] = Forker::$GET_STATUS_UPDATES;
+		$parameters["userid"] = $_SESSION['userid'];
+		Forker::doPost($parameters);
+
 		return self::$responder->constructResponse(null);
 	}
-	
-	
+
+
 	private function verifyUserInSession($userid){
-		
+
 	}
 
 }

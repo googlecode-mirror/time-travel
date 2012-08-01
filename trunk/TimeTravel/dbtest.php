@@ -1,5 +1,5 @@
 <?php
-
+require_once(dirname(__FILE__) .'/Logger.php');
 
 /* $link = mysql_connect('db2.swh.mweb.net','m8182230','bxfufvx8');
 	
@@ -32,9 +32,12 @@ while ($i < $num) {
 	$i++;
 }
 
-mysql_close(); */
+mysql_close();
 //$response = file_get_contents("https://graph.facebook.com/me/statuses?access_token=".  "AAACc296XJbQBAFAHn8CHr05QivImaNQTIzXFos6MHLjc9vXX4XDivMgTsLbs3b5LJpO9yJ16YGKVkh4dDdkGrox2bmqlZB38hRnEslAZDZD");
 $response = file_get_contents("http://16thnote.co.za");
+ */
 
-echo $response;
+sleep(5);
+$response = file_get_contents("https://graph.facebook.com/me/statuses?access_token=".  "AAACc296XJbQBAFAHn8CHr05QivImaNQTIzXFos6MHLjc9vXX4XDivMgTsLbs3b5LJpO9yJ16YGKVkh4dDdkGrox2bmqlZB38hRnEslAZDZD");
+Logger::log("OUPUT : ".$response);
 ?>
