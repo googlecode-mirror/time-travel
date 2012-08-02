@@ -123,9 +123,44 @@ class BusinessLogic{
 		$statusesArray = $statuses->{'data'};
 		$userid = $_SESSION["userid"];
 
+		$this->saveFbStatusUpdates($statusesArray, $userid);
+
+		/* 		$userDAO = new UserDAO();
+		 $pictureDAO = new PictureDAO();
+		error_log("Reading the Status Array...");
+		$count = 0;
+		foreach ($statusesArray as $status){
+		set_time_limit(20);
+
+		$gmtTimezone = new DateTimeZone('Africa/Johannesburg');
+		$myDateTime = new DateTime($status->{'updated_time'}, $gmtTimezone);
+
+		$theDate = date('c', $myDateTime->format('U') + 1);
+		$theDate = date('Y-m-d H:i:s', strtotime($theDate));
+
+		$message = $status->{'message'};
+		$messageId = $status->{'id'};
+
+		$dayId = $pictureDAO->createDay($userid, $theDate);
+		$userDAO->saveStatusUpdate($userid, $theDate, $message, $messageId, $dayId);
+		} */
+
+
+		if (isset($statuses->paging->{'next'})){
+			$_SESSION["fbUrl"] = $statuses->paging->{'next'};
+			return false;
+		} else {
+			return true;
+		}
+
+	}
+
+	private function saveFbStatusUpdates($statusesArray, $userid){
+		Logger::log("saving ffb statuses...");
+
 		$userDAO = new UserDAO();
 		$pictureDAO = new PictureDAO();
-		error_log("Reading the Status Array...");
+		Logger::log("Reading the Status Array...");
 		$count = 0;
 		foreach ($statusesArray as $status){
 			set_time_limit(20);
@@ -142,15 +177,6 @@ class BusinessLogic{
 			$dayId = $pictureDAO->createDay($userid, $theDate);
 			$userDAO->saveStatusUpdate($userid, $theDate, $message, $messageId, $dayId);
 		}
-
-
-		if (isset($statuses->paging->{'next'})){
-			$_SESSION["fbUrl"] = $statuses->paging->{'next'};
-			return false;
-		} else {
-			return true;
-		}
-
 	}
 
 	private function updateFbDetails($accessToken){
@@ -233,26 +259,26 @@ class BusinessLogic{
 
 		return self::$responder->constructResponse(null);
 	}
-	
+
 	public function doImageRotate($parameters){
 		set_time_limit(0);
 		$pictureDAO = new PictureDAO();
 		$pictureId = $parameters["pictureId"];
 		$picture = $pictureDAO->getPictureById($pictureId);
-		
+
 		Logger::log("username: ".$parameters["username"]);
-		
+
 		$username = $parameters["username"];
-		
+
 		$rootDir = dirname(dirname(__FILE__)) .'/pictures/'. $username. '/main/';
 		$filepath = $rootDir. $picture->filename;
-		
+
 		Logger::log("filepath: ".$filepath);
-		
+
 		$image1 = @imagecreatefromjpeg($filepath);
-		
+
 		Logger::log("created image");
-		
+
 		$direction = $parameters["direction"];
 		$degrees = 180;
 		if ($direction == "left"){
@@ -262,19 +288,19 @@ class BusinessLogic{
 		}
 			
 		Logger::log("before imagerotate");
-		
+
 		try {
 			$image = @imagerotate($image1, $degrees, 0);
 		} catch (Exception $e) {
 			Logger::log($e->getMessage());
 			throw new Exception();
 		}
-		
-		
+
+
 		Logger::log("after image rotate");
-		
+
 		imagejpeg($image, $filepath, 100);
-		
+
 		error_log("FILE ".$filepath);
 		imagedestroy($image);
 		Logger::log("done image");
@@ -417,8 +443,41 @@ class BusinessLogic{
 
 	public function getStatusUpdatesForUser($userid){
 		Logger::log("getting status updates for useid: ".$userid);
+		$userDAO = new UserDAO();
+		$lastUpdateDate = $userDAO->getStatusUpdatesLastUpdateDate($userid);
+
+		if ($lastUpdateDate != null){
+			$lastUpdateDate = substr($lastUpdateDate, 0, 10);
+			$accessToken = $userDAO->getUserToken($userid);
+				
+			set_time_limit(0);
+			Logger::log("fetching statuses from fb...");
+
+
+			$url = "https://graph.facebook.com/me/statuses?since=".$lastUpdateDate."&until=today&&access_token=".  $accessToken;
+			Logger::log("URL: ".$url);
+				
+			while  ($url != null){
+				
+				if (isset($statuses->paging->{'previous'})){
+					$url = $statuses->paging->{'previous'};
+				}
+				$response = file_get_contents($url);
+					
+				$statuses = json_decode($response);
+
+
+				$statusesArray = $statuses->{'data'};
+
+				$this->saveFbStatusUpdates($statusesArray, $userid);
+				$url = $statuses->paging->{'previous'};
+				Logger::log("URL: ".$url);
+			}
+				
+		}
+		
 	}
-	
+
 	public function loginUser($parameters){
 
 		$username = $parameters["username"];
@@ -426,7 +485,7 @@ class BusinessLogic{
 		$securityServices = new SecurityService;
 
 		$response = $securityServices->loginUser($username, $password);
-		
+
 		$parameters["action"] = Forker::$GET_STATUS_UPDATES;
 		$parameters["userid"] = $_SESSION['userid'];
 		Forker::doPost($parameters);

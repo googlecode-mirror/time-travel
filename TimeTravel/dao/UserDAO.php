@@ -4,6 +4,72 @@ require_once(dirname(dirname(__FILE__)) .'/viewbean/StatusUpdate.php');
 
 class UserDAO {
 	
+	private function doesStatusUpdateExist($statusUpdateId){
+		try {
+			$con = new PDO(GlobalConfig::db_pdo_connect_string, GlobalConfig::db_username, GlobalConfig::db_password);
+			$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			$stmt = $con->prepare("select id from status_update where id=:id");
+			$stmt->bindParam(':id', $statusUpdateId);
+		
+			if ($stmt->execute()){
+				while ($row = $stmt->fetch()){
+					return true;
+				}
+			}
+		
+		
+		} catch (PDOException $e) {
+			print "Error!: " . $e->getMessage() . "<br/>";
+			throw new Exception('004');
+		}
+		return false;
+	}
+	
+	public function getUserToken($userid){
+		$fbToken = null;
+		try {
+			$con = new PDO(GlobalConfig::db_pdo_connect_string, GlobalConfig::db_username, GlobalConfig::db_password);
+			$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			$stmt = $con->prepare("select fbToken from user where id=:id");
+			$stmt->bindParam(':id', $userid);
+		
+			$fbToken = null;
+			if ($stmt->execute()){
+				while ($row = $stmt->fetch()){
+					$fbToken = $row['fbToken'];
+				}
+			}
+		
+		
+		} catch (PDOException $e) {
+			print "Error!: " . $e->getMessage() . "<br/>";
+			throw new Exception('004');
+		}
+		return $fbToken;
+	}
+	
+	public function getStatusUpdatesLastUpdateDate($userid){
+		$lastUpdateDate = null;
+		try {
+			$con = new PDO(GlobalConfig::db_pdo_connect_string, GlobalConfig::db_username, GlobalConfig::db_password);
+			$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			$stmt = $con->prepare("select max(theDate) as theDate from status_update where userid=:userid");
+			$stmt->bindParam(':userid', $userid);
+		
+			$statusUpdate = null;
+			if ($stmt->execute()){
+				while ($row = $stmt->fetch()){
+					$lastUpdateDate = $row['theDate'];
+				}
+			}
+		
+		
+		} catch (PDOException $e) {
+			print "Error!: " . $e->getMessage() . "<br/>";
+			throw new Exception('004');
+		}
+		return $lastUpdateDate;
+	}
 	
 	public function saveFbToken($userid, $fbToken){
 		try {
@@ -26,6 +92,10 @@ class UserDAO {
 
 	public function saveStatusUpdate($userid, $theDate, $message, $messageId, $dayId){
 		error_log("in saveStatusUpdate: ".$message);
+		if ($this->doesStatusUpdateExist($messageId)){
+			return;
+		}
+		
 		try {
 			$con = new PDO(GlobalConfig::db_pdo_connect_string, GlobalConfig::db_username, GlobalConfig::db_password);
 			$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
