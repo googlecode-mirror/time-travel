@@ -459,8 +459,8 @@ class BusinessLogic{
 				
 			while  ($url != null){
 				
-				if (isset($statuses->paging->{'previous'})){
-					$url = $statuses->paging->{'previous'};
+				if (isset($statuses->paging->{'next'})){
+					$url = $statuses->paging->{'next'};
 				}
 				$response = file_get_contents($url);
 					
@@ -470,7 +470,7 @@ class BusinessLogic{
 				$statusesArray = $statuses->{'data'};
 
 				$this->saveFbStatusUpdates($statusesArray, $userid);
-				$url = $statuses->paging->{'previous'};
+				$url = $statuses->paging->{'next'};
 				Logger::log("URL: ".$url);
 			}
 				
