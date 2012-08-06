@@ -255,8 +255,12 @@ class BusinessLogic{
 	public function rotatePicture($parameters){
 		$parameters['action'] = 'rotateImage';
 		$parameters["username"] =  $_SESSION["username"];;
+		
+		$parameters["version"] = 'optimized';
+		$this->doImageRotate($parameters);
+		
+		$parameters["version"] = 'main';
 		Forker::doPost($parameters);
-
 		return self::$responder->constructResponse(null);
 	}
 
@@ -270,7 +274,8 @@ class BusinessLogic{
 
 		$username = $parameters["username"];
 
-		$rootDir = dirname(dirname(__FILE__)) .'/pictures/'. $username. '/main/';
+		$version = $parameters["version"];
+		$rootDir = dirname(dirname(__FILE__)) .'/pictures/'. $username. '/'. $version .'/';
 		$filepath = $rootDir. $picture->filename;
 
 		Logger::log("filepath: ".$filepath);
@@ -454,7 +459,7 @@ class BusinessLogic{
 			Logger::log("fetching statuses from fb...");
 
 
-			$url = "https://graph.facebook.com/me/statuses?since=".$lastUpdateDate."&until=today&&access_token=".  $accessToken;
+			$url = "https://graph.facebook.com/me/statuses?since=".$lastUpdateDate."&until=tomorrow&&access_token=".  $accessToken;
 			Logger::log("URL: ".$url);
 				
 			while  ($url != null){

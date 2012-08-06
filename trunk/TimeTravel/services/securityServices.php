@@ -110,6 +110,7 @@ class SecurityService  {
 			mkdir(dirname(dirname(__FILE__)) .'/pictures/'. $username.'/temp');
 			mkdir(dirname(dirname(__FILE__)) .'/pictures/'. $username.'/main');
 			mkdir(dirname(dirname(__FILE__)) .'/pictures/'. $username.'/thumbnails');
+			mkdir(dirname(dirname(__FILE__)) .'/pictures/'. $username.'/optimized');
 			
 			
 			error_log("[SecurityService] done creating user...");
