@@ -169,22 +169,15 @@ function showCaptionOverlay(){
 	$("#picCaptionOverlay").dialog('open');
 }
 
-function showPicture(anchor){
-	var originalImage = $(anchor).find("img");
-	var originalHeight = $(originalImage).height();
-	var originalWidth = $(originalImage).width();
-	var newHeight = screen.height - 300;
-	$(originalImage).css("height", newHeight+"px");
-	$(originalImage).removeAttr("width");
-
-	$("#pictureDiv").html($(originalImage).clone());
+function showPicture(anchor, originalWidth, originalHeight, image){
 	
 	var caption = $(anchor).parent().parent().find(".showcase-caption");
 	$(caption).css({bottom: '100px'});
 	$("#pictureDiv").append(caption);
 
-	var newWidth = (((newHeight/originalHeight)* originalWidth) + 50) > screen.width ? screen.width : (((newHeight/originalHeight)* originalWidth) + 50);
-	
+	var newHeight = screen.height - 300;
+	var newWidth = (((newHeight/originalHeight)* originalWidth) + 50) > screen.width ? screen.width : (((newHeight/originalHeight)* originalWidth) + 50) - 250;
+
 	$("#picOverlay").dialog( {
 		bgiframe : true,
 		autoOpen : false,
@@ -197,14 +190,13 @@ function showPicture(anchor){
 		//show: { show: 'slide', direction: "up" },
 		buttons : {
 			Close : function() {
-				//returnPicture(originalWidth, originalHeight, anchor);
-				$("#pictureDiv").html("");
-				$(this).dialog("close");
+				$(this).dialog("destroy");
 			}
 		}
 	});
 
 	$("#picOverlay").dialog("open");
+	$("#pictureDiv").html(image);
 }
 
 function returnPicture(width, height, anchor){
@@ -229,7 +221,7 @@ function callPictureRotate(direction){
 		//var timestamp = new Date().getTime();
 		//$(img).attr("src", picSoure + '?' +timestamp);
 
-		loadThisImage(imageId, picSoure);
+		loadThisImage(imageId, picSoure, true);
 	}, picSoure);
 }
 
@@ -254,17 +246,41 @@ function updatePictureCaption(){
 	});
 }
 
-function loadThisImage(imageId, imageUrl){
-	var loader = $("a[id='"+ imageId +"']");
+function loadMainImage(anchor){
+	var holder = $("#pictureDiv");
+	var url = $(anchor).parent().find("#mainPicUrl").val();
+	var img = new Image();
+
 	var numRand = Math.random();
+  	img.src = url+"?rand="+numRand;
+
+    img.onload = function(){
+		this.height = screen.height - 290;
+    	showPicture(anchor, this.width, this.height, this);
+     	//showLoading(false);
+    };
+    img.onerror = function(){
+     	this.src = "/images/NoPicture.gif";
+     	this.onload = function(){
+     		showLoading(false);
+     		$(holder).html(this);
+     	};
+    };
+}
+
+function loadThisImage(imageId, imageUrl, refresh){
+	var loader = $("a[id='"+ imageId +"']");
 	var url = imageUrl;
 	var img = new Image();
-	//this.height = 500;
-	//this.width = 400;
     
-    img.src = url+"?rand="+numRand;
+    if (refresh){
+        var numRand = Math.random();
+    	img.src = url+"?rand="+numRand;
+    } else {
+    	img.src = url;
+    }
+
     img.onload = function(){
-    	//this.height = 400;
     	this.width = 460;
      	$(loader).html(this);
      	showLoading(false);
@@ -357,7 +373,8 @@ function updateSelectedTimeForNewDate(control){
 				<?php
 				foreach($pictures as $picture){
 					$picturesFound = true;
-					$pictureSrc =  '/pictures/'.$username.'/main/'.$picture->filename;
+					$pictureSrc =  '/pictures/'.$username.'/optimized/'.$picture->filename;
+					$mainPicUrl =  '/pictures/'.$username.'/main/'.$picture->filename;
 				?>
 				<!-- Each child div in #showcase represents a slide -->
 				<div class="showcase-slide">
@@ -365,7 +382,8 @@ function updateSelectedTimeForNewDate(control){
 					<div class="showcase-content">
 						<input id="pictureId" type="hidden" value="<?php echo$picture->id ?>"/>
 						<input id="pictureSrc" type="hidden" value="<?php echo$pictureSrc?>"/>
-						<a id="<?php echo$picture->id ?>" href="#" onclick="showPicture(this);"><img id="<?php echo$picture->id ?>" src="/images/loading.gif" width="60" style="position: relative; top: 120px;"/></a>
+						<input id="mainPicUrl" type="hidden" value="<?php echo$mainPicUrl?>"/>
+						<a id="<?php echo$picture->id ?>" filename="<?php echo$picture->filename?>" href="#" onclick="loadMainImage(this);"><img id="<?php echo$picture->id ?>" src="/images/loading.gif" width="60" style="position: relative; top: 120px;"/></a>
 					</div>
 					<!-- Put the caption content in a div with the class .showcase-caption -->
 					<div class="showcase-caption">
