@@ -338,9 +338,6 @@ function updateSelectedTimeForNewDate(control){
 				$username = $_SESSION['username'];
 				$loggedIn = true;
 				error_log("session is set");
-			} else {
-				error_log("no session, redirecting...");
-				header( 'Location: http://www.sabside.com/index.php' ) ;
 			}
 			
 			$dayDAO = new DayDAO();
@@ -428,7 +425,6 @@ function updateSelectedTimeForNewDate(control){
 			//alert("<?php echo$chosenDate?>");
 			params.chosenDate = "<?php echo$chosenDate?>";
 			params.diplayDateInput = "<?php echo$diplayDate?>";
-			params.username = <?php echo $username?>
 		//});
 		</script>
 		
