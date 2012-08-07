@@ -29,6 +29,12 @@ class Forker {
 			$busLogic->getStatusUpdatesForUser($parameterMap['userid']);
 		} else if ($action == "rotateImage"){
 			$busLogic->doImageRotate($parameterMap);
+		} else {
+			$actionName = $parameterMap["action"];
+			$class = new ReflectionClass($parameterMap["serviceClass"]);
+			$classInstance = $class->newInstance();
+			$response = $classInstance->$actionName($parameterMap);
+			Logger::log($response);
 		}
 	}
 

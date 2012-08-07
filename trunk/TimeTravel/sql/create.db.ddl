@@ -57,3 +57,15 @@ CREATE TABLE  `journal`.`status_update` (
   KEY `FK_status_update_userid` (`userid`),
   CONSTRAINT `FK_status_update_userid` FOREIGN KEY (`userid`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `journal`.`location` (
+  `dayid` INTEGER UNSIGNED NOT NULL,
+  `theTimestamp` TIMESTAMP NOT NULL,
+  `longitude` TEXT NOT NULL,
+  `latitude` TEXT NOT NULL,
+  CONSTRAINT `FK_location_dayid` FOREIGN KEY `FK_location_dayid` (`dayid`)
+    REFERENCES `user_day` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+)
+ENGINE = InnoDB;

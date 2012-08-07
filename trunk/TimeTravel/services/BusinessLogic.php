@@ -3,6 +3,7 @@ require_once(dirname(dirname(__FILE__)) . '/services/securityServices.php');
 require_once(dirname(dirname(__FILE__)) . '/dao/PictureDAO.php');
 require_once(dirname(dirname(__FILE__)) . '/dao/UserDAO.php');
 require_once(dirname(dirname(__FILE__)) . '/dao/DayDAO.php');
+require_once(dirname(dirname(__FILE__)) . '/dao/LocationDAO.php');
 require_once(dirname(dirname(__FILE__)) . '/errorCodes.php');
 require_once(dirname(dirname(__FILE__)) . '/dto/Action.php');
 require_once(dirname(dirname(__FILE__)) .'/conf.php');
@@ -13,12 +14,32 @@ date_default_timezone_set('Africa/Johannesburg');
 
 class BusinessLogic{
 	private static $responder;
+	private static $locationDAO;
+	private static $userDAO;
+	private static $pictureDAO;
+	private static $dayDAO;
+	private static $securityServices;
 
 	function __construct() {
 		session_start();
 		self::$responder = new Responder;
+		self::$locationDAO = new LocationDAO();
+		self::$userDAO = new UserDAO();
+		self::$pictureDAO = new PictureDAO();
+		self::$dayDAO = new DayDAO();
+		self::$securityServices = new SecurityService();
 	}
 
+	public function recordMyLocation($parameters){
+		$user = self::$securityServices->getUserByUsername($parameters["username"]);
+		
+		$timestamp = $parameters["timestamp"];
+		$timestamp = date("Y-m-d H:i:s", ($timestamp/1000));
+		$dayId = self::$pictureDAO->createDay($user->id, $timestamp);
+		
+		self::$locationDAO->saveLocation($dayId, $timestamp, $parameters["longitude"], $parameters["latitude"]);
+	}
+	
 
 	/*Moves the pictures for user from the temp folder to the main*/
 	public function moveUserPictures($parameters){
@@ -63,8 +84,6 @@ class BusinessLogic{
 			$accessToken = $parameters["access_token"];
 			$_SESSION["access_token"] = $accessToken;
 
-			$userDAO = new UserDAO();
-
 			if (!isset($_SESSION["nextState"])){
 				$_SESSION["nextState"] = $state = "saveFbToken";
 			} else {
@@ -74,7 +93,7 @@ class BusinessLogic{
 			Logger::log("STATE: ".$state);
 
 			switch ($state){
-				case "saveFbToken": $userDAO->saveFbToken($_SESSION["userid"], $accessToken);
+				case "saveFbToken": self::$userDAO->saveFbToken($_SESSION["userid"], $accessToken);
 				$_SESSION["nextState"] = "updateFbDetails";
 				return self::$responder->constructLoopResponse("Facebook token saved successfully.");
 
@@ -157,10 +176,6 @@ class BusinessLogic{
 
 	private function saveFbStatusUpdates($statusesArray, $userid){
 		Logger::log("saving ffb statuses...");
-
-		$userDAO = new UserDAO();
-		$pictureDAO = new PictureDAO();
-		Logger::log("Reading the Status Array...");
 		$count = 0;
 		foreach ($statusesArray as $status){
 			set_time_limit(20);
@@ -174,8 +189,8 @@ class BusinessLogic{
 			$message = $status->{'message'};
 			$messageId = $status->{'id'};
 
-			$dayId = $pictureDAO->createDay($userid, $theDate);
-			$userDAO->saveStatusUpdate($userid, $theDate, $message, $messageId, $dayId);
+			$dayId = self::$pictureDAO->createDay($userid, $theDate);
+			self::$userDAO->saveStatusUpdate($userid, $theDate, $message, $messageId, $dayId);
 		}
 	}
 
@@ -184,8 +199,8 @@ class BusinessLogic{
 		error_log("FB USER INFO: ".$response);
 		$fbuser = json_decode(str_replace('\"','"',$response));
 			
-		$securityServices = new SecurityService;
-		$user = $securityServices->getUserById($_SESSION["userid"]);
+		self::$securityServices = new SecurityService;
+		$user = self::$securityServices->getUserById($_SESSION["userid"]);
 
 		error_log("userid: ". $_SESSION["userid"]);
 
@@ -220,7 +235,7 @@ class BusinessLogic{
 
 		error_log("birthday : ". $birthday);
 
-		$securityServices->updateUserDetails($user->id, $user->name, $user->surname, $user->username, $user->email, $gender, $user->cellphone, $location, $work, $birthday, $timezone);
+		self::$securityServices->updateUserDetails($user->id, $user->name, $user->surname, $user->username, $user->email, $gender, $user->cellphone, $location, $work, $birthday, $timezone);
 
 	}
 
@@ -228,25 +243,24 @@ class BusinessLogic{
 
 		error_log("in updatePictureCaption");
 
-		$pictureDAO = new PictureDAO();
 		$pictureId = $parameters["pictureId"];
 		$caption = $parameters["caption"];
 		$timetaken = $parameters["dateandtime"];
 			
 		if (isset($timetaken) && ($timetaken != "")){
 			error_log("timetaken is set: ".$timetaken);
-			$dayid = $pictureDAO->createDay($_SESSION["userid"], $timetaken);
+			$dayid = self::$pictureDAO->createDay($_SESSION["userid"], $timetaken);
 
-			$picture = $pictureDAO->getPictureById($pictureId);
+			$picture = self::$pictureDAO->getPictureById($pictureId);
 
-			$pictureDAO->updatePictureTimeTaken($pictureId, $dayid, $timetaken);
+			self::$pictureDAO->updatePictureTimeTaken($pictureId, $dayid, $timetaken);
 
 			//we need to delete the day that the picture fell in if it's not used anymore
-			$dayDAO = new DayDAO();
-			$dayDAO->deleteDayIfUnused($picture->dayId);
+			
+			self::$dayDAO->deleteDayIfUnused($picture->dayId);
 
 		} else if (isset($caption)){
-			$pictureDAO->updatePictureCaption($pictureId, $caption);
+			self::$pictureDAO->updatePictureCaption($pictureId, $caption);
 		}
 			
 		return self::$responder->constructResponse(null);
@@ -266,9 +280,8 @@ class BusinessLogic{
 
 	public function doImageRotate($parameters){
 		set_time_limit(0);
-		$pictureDAO = new PictureDAO();
 		$pictureId = $parameters["pictureId"];
-		$picture = $pictureDAO->getPictureById($pictureId);
+		$picture = self::$pictureDAO->getPictureById($pictureId);
 
 		Logger::log("username: ".$parameters["username"]);
 
@@ -313,19 +326,18 @@ class BusinessLogic{
 
 	public function updatePassword($parameters){
 
-		$securityServices = new SecurityService;
 		$capturedCurrentPassword = $parameters["currentPassword"];
 		$capturedNewPassword = $parameters["newPassword"];
 
 		verifyUserSession($parameters);
 			
-		$dbCurrentPassword = $securityServices->getUserPassword($parameters["userid"]);
+		$dbCurrentPassword = self::$securityServices->getUserPassword($parameters["userid"]);
 
 		if ((md5($capturedCurrentPassword, true)) != $dbCurrentPassword){
 			throw new Exception("034");
 		}
 
-		$securityServices->updatePassword($parameters["userid"], $capturedNewPassword);
+		self::$securityServices->updatePassword($parameters["userid"], $capturedNewPassword);
 
 		try {
 			$communicationServices = new CommunicationServices;
@@ -341,17 +353,14 @@ class BusinessLogic{
 	}
 
 	private function verifyUserSession($parameters){
-		$securityServices = new SecurityService;
-		$securityServices->verifyUserSession($parameters);
+		self::$securityServices->verifyUserSession($parameters);
 	}
 
 	/**
 	 * Gets user details but grabs userid from session, passed on by Controller
 	 */
 	public function getUserDetails($parameters){
-		$securityServices = new SecurityService;
-
-		$user = $securityServices->getUserById($parameters["userid"]);
+		$user = self::$securityServices->getUserById($parameters["userid"]);
 
 		return self::$responder->constructResponse($user);
 	}
@@ -366,9 +375,8 @@ class BusinessLogic{
 		$facebook = $parameters["facebook"];
 		$cellphone = $parameters["cellphone"];
 
-		$securityServices = new SecurityService;
 		try {
-			$securityServices->updateUserDetails($userid, $name, $surname, $username, $email, $facebook, $cellphone);
+			self::$securityServices->updateUserDetails($userid, $name, $surname, $username, $email, $facebook, $cellphone);
 		} catch (Exception $e){
 			throw new Exception($e->getMessage());
 		}
@@ -387,13 +395,12 @@ class BusinessLogic{
 
 
 	public function doForgotPassword($parameters){
-		$securityServices = new SecurityService;
 		if (isset($parameters["identify_email"])){
 			//is it an email?
 			if (strpos($parameters["identify_email"], "@")){
-				$user = $securityServices->getUserByEmailAddress($parameters["identify_email"]);
+				$user = self::$securityServices->getUserByEmailAddress($parameters["identify_email"]);
 			} else {
-				$user = $securityServices->getUserByUsername($parameters["identify_email"]);
+				$user = self::$securityServices->getUserByUsername($parameters["identify_email"]);
 			}
 		} else {
 			throw new Exception('028');
@@ -404,7 +411,7 @@ class BusinessLogic{
 			throw new Exception("031");
 		} else {
 			$username = $user->username;
-			$generatedPass = $securityServices->resetPassword($username);
+			$generatedPass = self::$securityServices->resetPassword($username);
 
 			$communicationServices = new CommunicationServices;
 			$subject = "Kagogo password reset.";
@@ -421,10 +428,9 @@ class BusinessLogic{
 
 	public function createUser($parameters){
 		error_log("[BusinessLogic] creating user...");
-		$securityServices = new SecurityService;
 		try {
 			$password = md5($parameters["password"], true);
-			$user = $securityServices->createUser($parameters["username"], $password, $parameters["name"], $parameters["surname"], $parameters["email"]);
+			$user = self::$securityServices->createUser($parameters["username"], $password, $parameters["name"], $parameters["surname"], $parameters["email"]);
 		} catch (PDOException $e) {
 			print "Error!: " . $e->getMessage() . "<br/>";
 			throw new Exception('001');
@@ -434,9 +440,8 @@ class BusinessLogic{
 	}
 
 	public function getUserById($parameters){
-		$securityServices = new SecurityService;
 		try {
-			$user = $securityServices->getUserById($parameters["userid"]);
+			$user = self::$securityServices->getUserById($parameters["userid"]);
 
 		} catch (PDOException $e) {
 			print "Error!: " . $e->getMessage() . "<br/>";
@@ -448,12 +453,11 @@ class BusinessLogic{
 
 	public function getStatusUpdatesForUser($userid){
 		Logger::log("getting status updates for useid: ".$userid);
-		$userDAO = new UserDAO();
-		$lastUpdateDate = $userDAO->getStatusUpdatesLastUpdateDate($userid);
+		$lastUpdateDate = self::$userDAO->getStatusUpdatesLastUpdateDate($userid);
 
 		if ($lastUpdateDate != null){
 			$lastUpdateDate = substr($lastUpdateDate, 0, 10);
-			$accessToken = $userDAO->getUserToken($userid);
+			$accessToken = self::$userDAO->getUserToken($userid);
 				
 			set_time_limit(0);
 			Logger::log("fetching statuses from fb...");
@@ -487,9 +491,8 @@ class BusinessLogic{
 
 		$username = $parameters["username"];
 		$password = $parameters["password"];
-		$securityServices = new SecurityService;
 
-		$response = $securityServices->loginUser($username, $password);
+		$response = self::$securityServices->loginUser($username, $password);
 
 		$parameters["action"] = Forker::$GET_STATUS_UPDATES;
 		$parameters["userid"] = $_SESSION['userid'];
