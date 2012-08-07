@@ -5,6 +5,7 @@ require_once "services/BusinessLogic.php";
 require_once "errorCodes.php";
 require_once "dto/Action.php";
 require_once "ErrorHandler.php";
+require_once(dirname(__FILE__) .'/services/Forker.php');
 
 setCustomError();
 $errMessage = "";
@@ -12,7 +13,7 @@ $errCode = 0;
 try {
 	error_reporting(E_ERROR | E_PARSE);
 	session_start();
-
+	
 	$actionName = $_REQUEST["action"];
 	$action = new Action($actionName);
 
@@ -51,6 +52,15 @@ try {
 	}
 
 
+	//do we need to fork
+	if (isset($action->forker) && ($action->forker == "true")){
+		error_log("I am going to fork");
+		$parameters["action"] = $actionName;
+		$parameters["serviceClass"] = $action->serviceClass;
+		Forker::doPost($parameters);
+		return;
+	}
+	
 	$responder = new Responder;
 
 	$response = $classInstance->$actionName($parameters);

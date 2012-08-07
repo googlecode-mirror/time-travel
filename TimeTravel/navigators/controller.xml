@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <controller>
 	<action>
+		<name>recordMyLocation</name>
+		<service-class-name>BusinessLogic</service-class-name>
+		<forker>false</forker>
+		<postlogon>false</postlogon>
+		<expected-params>
+			<param required="true">username</param>
+			<param required="true">timestamp</param>
+			<param required="true">longitude</param>
+			<param required="true">latitude</param>
+		</expected-params>
+	</action>
+	<action>
 		<name>moveUserPictures</name>
 		<service-class-name>BusinessLogic</service-class-name>
 		<postlogon>true</postlogon>

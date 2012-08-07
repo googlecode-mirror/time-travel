@@ -5,6 +5,7 @@ class Action {
 	public $serviceClass;
 	public $parameters;
 	public $postlogon;
+	public $forker;
 
 	public function __construct($actionName)  {
 		$this->name = $actionName;
@@ -26,6 +27,9 @@ class Action {
 
 				$this->postlogon = $value->getElementsByTagName("postlogon")->item(0)->nodeValue;
 				error_log("POSTLOGIN: ".$this->postlogon);
+				
+				
+				$this->forker =$value->getElementsByTagName("forker")->item(0)->nodeValue;
 
 				$classElement = $value->getElementsByTagName("service-class-name");
 				$className = $classElement->item(0)->nodeValue;

@@ -272,7 +272,8 @@ function loadThisImage(imageId, imageUrl, refresh){
 	var loader = $("a[id='"+ imageId +"']");
 	var url = imageUrl;
 	var img = new Image();
-    
+
+	refresh = true;
     if (refresh){
         var numRand = Math.random();
     	img.src = url+"?rand="+numRand;
@@ -281,7 +282,10 @@ function loadThisImage(imageId, imageUrl, refresh){
     }
 
     img.onload = function(){
-    	this.width = 460;
+		if (this.width > this.height)
+			 this.height = 400;
+		else
+    		this.width = 460;
      	$(loader).html(this);
      	showLoading(false);
     };
@@ -334,6 +338,9 @@ function updateSelectedTimeForNewDate(control){
 				$username = $_SESSION['username'];
 				$loggedIn = true;
 				error_log("session is set");
+			} else {
+				error_log("no session, redirecting...");
+				header( 'Location: http://www.sabside.com/index.php' ) ;
 			}
 			
 			$dayDAO = new DayDAO();
@@ -421,6 +428,7 @@ function updateSelectedTimeForNewDate(control){
 			//alert("<?php echo$chosenDate?>");
 			params.chosenDate = "<?php echo$chosenDate?>";
 			params.diplayDateInput = "<?php echo$diplayDate?>";
+			params.username = <?php echo $username?>
 		//});
 		</script>
 		
