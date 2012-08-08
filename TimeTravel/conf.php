@@ -9,5 +9,6 @@ class GlobalConfig
 	const facebook_url = "http://localhost/index.php?response=facebook";
 	const forker_url  = "http://www.sabside.com/services/handleFork.php";
 	const environment  = 'localhost';
+	const googel_api_key = "AIzaSyBKdklWP-P35blJE2JZb2iwfEI4WqcdmiA";
 }
 ?>

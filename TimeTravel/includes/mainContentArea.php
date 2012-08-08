@@ -3,6 +3,9 @@
 	require_once(dirname(dirname(__FILE__)) . '/dao/DayDAO.php');
 	require_once(dirname(dirname(__FILE__)) . '/dao/PictureDAO.php');
 	require_once(dirname(dirname(__FILE__)) . '/dao/UserDAO.php');
+	require_once(dirname(dirname(__FILE__)) . '/dao/LocationDAO.php');
+	require_once(dirname(dirname(__FILE__)) .'/conf.php');
+	
 	date_default_timezone_set('Africa/Johannesburg');
 ?>
 
@@ -270,10 +273,14 @@ function loadMainImage(anchor){
 
 function loadThisImage(imageId, imageUrl, refresh){
 	var loader = $("a[id='"+ imageId +"']");
+
+	if ($(loader).size() == 0){
+		loader = $(imageId);
+	}
 	var url = imageUrl;
 	var img = new Image();
 
-	refresh = true;
+	//refresh = true;
     if (refresh){
         var numRand = Math.random();
     	img.src = url+"?rand="+numRand;
@@ -410,12 +417,6 @@ function updateSelectedTimeForNewDate(control){
 				$pictureTime = date("g:i a", strtotime($picture->timetaken));
 			} 
 
-			 if ($statusUpdateFound) {
-				$chosenDate = date("Y-m-d", strtotime($statusUpdate->theDate));
-				$diplayDate = date("Y F j l", strtotime($statusUpdate->theDate));
-				$statusUpdateTime = date("g:i a", strtotime($statusUpdate->theDate));
-			 }
-			 
 			 $_SESSION['chosenDate'] = $chosenDate;
 			 $_SESSION['diplayDate'] = $diplayDate;
 		?>
@@ -440,10 +441,53 @@ function updateSelectedTimeForNewDate(control){
 			<a href="#" onclick="showDateTakenOverlay();" title="Edit picture date"><img src="/images/calendar.png"width="22"/></a>
 		</div>
 		<br/><br/>
-		<div class="formlabel" style="display: <?php echo$statusUpdateFound? "block" : "none"; ?>;">
+		
+		
+		<!-- STATUS UPDATES -->
+		<?php if ($statusUpdateFound) {
+				$chosenDate = date("Y-m-d", strtotime($statusUpdate->theDate));
+				$diplayDate = date("Y F j l", strtotime($statusUpdate->theDate));
+				$statusUpdateTime = date("g:i a", strtotime($statusUpdate->theDate));
+			 ?>
+		<div class="formlabel" style="display:block;">
 			 <div style="font-size: 1.1em; text-align: left;">"<?php echo $statusUpdate->message ?>"</div><br/>
 			 <div style="font-size: 0.8em; text-align: right;"><?php echo $statusUpdateTime ?></div>
 		</div>
+		
+		<?php }?>
+		
+	
+		<!--GEO LOCATIONS -->
+		<?php 
+			$locationDAO = new LocationDAO();
+			
+			$geoLocations = $locationDAO->getLocationsForDay($dayToDisplay);
+			$url = "http://maps.googleapis.com/maps/api/staticmap?size=480x480&sensor=true&path=";
+			$count = 0;
+			foreach ($geoLocations as $location){
+				if ($count > 0){
+					$url .= "|";
+				}
+				$url .=$location->latitude.",".$location->longitude;
+				$count++;
+			}
+			
+			
+			$label = "A";
+			foreach ($geoLocations as $location){
+				$url .= "&markers=label:". $label."|";
+				$url .=$location->latitude.",".$location->longitude;
+				$label++;
+			}
+			
+			error_log("URL: ".$url);
+			
+			if ($count > 0){
+		?>
+		<div id="geoMap" class="formlabel" style="display:block;">
+			<img src="<?php echo $url?>" style="position: relative; left: -6px;"></img>
+		</div>
+		<?php }?>
 	</div>
 	
 

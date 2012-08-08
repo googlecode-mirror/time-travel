@@ -207,4 +207,3 @@ foreach ($statusUpdates as $statusUpdate){
 </div>
 
 <?php }?>
-
