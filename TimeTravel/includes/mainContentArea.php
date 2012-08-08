@@ -397,7 +397,7 @@ function updateSelectedTimeForNewDate(control){
 						<a id="<?php echo$picture->id ?>" filename="<?php echo$picture->filename?>" href="#" onclick="loadMainImage(this);"><img id="<?php echo$picture->id ?>" src="/images/loading.gif" width="60" style="position: relative; top: 120px;"/></a>
 					</div>
 					<!-- Put the caption content in a div with the class .showcase-caption -->
-					<div class="showcase-caption">
+					<div class="showcase-caption" style="width: 440px; left: 0px;">
 						<div class="picDescription" style="float: left"><?php echo ($picture->description == "" ? "" : "\"") ?><?php echo $picture->description ?><?php echo ($picture->description == "" ? "" : "\"") ?></div>
 						
 						<div style="font-size: 0.7em; text-align: right; float: right;"><?php echo date("Y F j l g:i a", strtotime($picture->timetaken))?></div>
