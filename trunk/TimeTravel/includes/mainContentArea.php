@@ -6,6 +6,7 @@
 	require_once(dirname(dirname(__FILE__)) . '/dao/LocationDAO.php');
 	require_once(dirname(dirname(__FILE__)) . '/dao/GmailDAO.php');
 	require_once(dirname(dirname(__FILE__)) .'/conf.php');
+	require_once(dirname(dirname(__FILE__)) .'/util.php');
 	
 	date_default_timezone_set('Africa/Johannesburg');
 ?>
@@ -79,6 +80,9 @@ $(document).ready(function()	{
 		$(".selectInput").change(function(){
 			updateSelectedTimeForNewDate($(this));
 		});
+
+
+		$("#smsAccordion").accordion({ autoHeight: true, clearStyle: true });
 });
 
 function doChangePictureDate(){
@@ -412,7 +416,7 @@ function updateSelectedTimeForNewDate(control){
 						<a id="<?php echo$picture->id ?>" filename="<?php echo$picture->filename?>" href="#" onclick="loadMainImage(this);"><img id="<?php echo$picture->id ?>" src="/images/loading.gif" width="60" style="position: relative; top: 120px;"/></a>
 					</div>
 					<!-- Put the caption content in a div with the class .showcase-caption -->
-					<div class="showcase-caption" style="width: 440px; left: 0px;">
+					<div class="showcase-caption" style="width: 430px; left: 0px;">
 						<div class="picDescription" style="float: left"><?php echo ($picture->description == "" ? "" : "\"") ?><?php echo $picture->description ?><?php echo ($picture->description == "" ? "" : "\"") ?></div>
 						
 						<div style="font-size: 0.7em; text-align: right; float: right;"><?php echo date("Y F j l g:i a", strtotime($picture->timetaken))?></div>
@@ -435,9 +439,7 @@ function updateSelectedTimeForNewDate(control){
 		 
 		<!-- <div class="formlabel" style="display: <?php echo$picturesFound? "none" : "block"; ?>;">No Pictures taken on this day.</div>  -->
 		
-
-		
-		<div style="padding-top: 5px; position: relative; left: 0px; background-image:  url(../images/ui-bg_highlight-soft_100_eeeeee_1x100.png) 50% top repeat-x; width:100%; background-color: #EEE; display: <?php echo$picturesFound? "block" : "none"; ?>;">
+		<div class="ui-datepicker-inline ui-datepicker ui-widget ui-widget-content ui-helper-clearfix" style="padding-top: 5px; position: relative; left: 0px; width:450px; display: <?php echo$picturesFound? "block" : "none"; ?>;">
 			<a href="#" onclick="callPictureRotate('left');" title="Rotate picture left"><img src="/images/rotate-left.png"width="22"/></a>&nbsp;&nbsp;
 			<a href="#" onclick="callPictureRotate('right');" title="Rotate picture right"><img src="/images/rotate-right.png"width="22"/></a>&nbsp;&nbsp;
 			<a href="#" onclick="showCaptionOverlay();" title="Edit caption"><img src="/images/comment.png"width="22"/></a>&nbsp;&nbsp;
@@ -506,6 +508,7 @@ function updateSelectedTimeForNewDate(control){
 		<?php }?>
 	
 		
+		<div id="smsAccordion">
 	
 		<!-- SMS's -->
 		<?php 
@@ -515,20 +518,24 @@ function updateSelectedTimeForNewDate(control){
 				$smsList = $gmailDAO->getCommunicationContentForDay($dayToDisplay, "sms");
 				$smsList = array_reverse($smsList);
 				foreach ($smsList as $sms){
+					$source = Util::getSourceName($sms->from);
 				
 	?>
-		<div style="position: relative; left: 0px; float: left;"><?php echo $sms->from?></div>
-	 	<div style="position: relative; left: 0px; float: right;"><?php echo date("H:m:s", strtotime($sms->timestamp))?></div>
-	 	<hr width="100%" size="1">
-	 	<p class="formlabel" style="text-align: left; background-color: #FAF5F5;"><?php echo $sms->body?></p>
+		<h3><span style="float: left; left: 25px; position: relative;"><?php echo $source?></span>
 		
+		
+			<span align="right"><?php echo date("H:m:s", strtotime($sms->timestamp))?></span>
+		</h3>
+		<div>
+	 		<p class="formlabel" style="text-align: left; background-color: #FAF5F5;"><?php echo $sms->body?></p>
+		</div>
 	
 	<?php 
 				}
 			}
 		?>
 		
-		
+		</div>
 		
 		
 </div>
