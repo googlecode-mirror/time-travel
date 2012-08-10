@@ -69,6 +69,7 @@ A:hover {text-decoration: underline;}
 	params.mainContentType = "<?php echo$mainContentType?>";
 	params.fbToken = "<?php echo$facebookAccessToken?>";
 	params.fbCode = "<?php echo$facebookCode?>";
+	params.username = "<?php echo $username?>";
  </script>
  
  <div id="loadingPic" style="display: none; position:absolute; left: 0px; top:0px; height:100%; width: 100%; text-align: center;
@@ -81,10 +82,13 @@ A:hover {text-decoration: underline;}
 			<div id="addInfoDiv" style="float: left; text-align: right;">
 				<div style="font-size: 0.9em; color: #999; font-weight: bold; margin-top: 12px; padding-right: 15px;"><a href="index.php?response=pictures">PICTURES</a></div>
 				<div style="font-size: 0.9em; color: #999; font-weight: bold; margin-top: 12px; padding-right: 15px;"><a href="index.php?response=facebook" >STATUS UPDATES</a></div>
+				<div style="font-size: 0.9em; color: #999; font-weight: bold; margin-top: 12px; padding-right: 15px;"><a href="index.php?response=email" >EMAILS</a></div>
+				<div style="font-size: 0.9em; color: #999; font-weight: bold; margin-top: 12px; padding-right: 15px;"><a href="index.php?response=sms" >SMS's</a></div>
+				<div style="font-size: 0.9em; color: #999; font-weight: bold; margin-top: 12px; padding-right: 15px;"><a href="index.php?response=calls" >PHONE CALLS</a></div>
 			</div>
 			<div style="float: left; border-left:1px solid #E0E0E0; height: 600px; padding-left: 10px; width: 55%;">
 				<br/>
-				<div id="contentArea1"></div>
+				<div id="contentArea1" style="height: 600px; overflow: hidden; overflow-y: scroll; padding-right: 10px;"></div>
 			</div>
 
 			<div style="float: right; right: 0px; width: 30%; border-left:1px solid #E0E0E0;">

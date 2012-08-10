@@ -50,6 +50,7 @@ class ErrorCodes {
 		"037" => "You are trying to access data that you are not authorized to.",
 		"038" => "Username not set in session.",
 		"039" => "Could not copy files to main directory.",
+		"040" => "Could not save Gmail details. Please try again.",
 
 		//GENERAL
 		"025" => "Error. supplied field is too short.",

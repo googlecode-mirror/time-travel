@@ -159,7 +159,7 @@ function showSignUp() {
 	$("#signUpForm").dialog("open");
 }
 
-var loginUser = function userLogin(redirectUrl) {
+var loginUser = function (callback) {
 
 	if (!validateInputs($("#loginDlg"))) {
 		return false;
@@ -174,9 +174,12 @@ var loginUser = function userLogin(redirectUrl) {
 
 	$.post(url, parms, function(resultData) {
 		resultData = parseResult(resultData);
-		//alert(resultData);
-		//return;
-		var errorCode = $(resultData).find("code").text();
+		
+		if (typeof callback == "function"){
+			callback($("#username").val());
+		}
+		
+			var errorCode = $(resultData).find("code").text();
 		if (errorCode == 0) {
 			$("#loginUrl").hide();
 			$("#logoutUrl").show();
@@ -187,6 +190,19 @@ var loginUser = function userLogin(redirectUrl) {
 		}
 	});
 	return true;
+};
+
+
+var doContentUpdate = function(username){
+	console.log("updating content");
+	var url = "controller.php";
+	var parms = new Object();
+	parms["action"] = "updateGmailContent";
+	parms["username"] = username;
+	$.post(url, parms, function(resultData) {
+		resultData = parseResult(resultData);
+		console.log(resultData);
+	});
 };
 
 
@@ -218,7 +234,7 @@ function showLoginDlg(displayCompulsoryLogin) {
 				$(this).dialog("destroy");
 			},
 			Submit : function() {
-				if (loginUser()) {
+				if (loginUser(doContentUpdate)) {
 					$(this).dialog("destroy");
 				}
 			}

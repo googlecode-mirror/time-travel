@@ -2,6 +2,7 @@
 require_once 'conf.php';
 require_once "services/securityServices.php";
 require_once "services/BusinessLogic.php";
+require_once "services/EmailServices.php";
 require_once "errorCodes.php";
 require_once "dto/Action.php";
 require_once "ErrorHandler.php";

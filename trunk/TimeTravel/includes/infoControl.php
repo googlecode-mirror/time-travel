@@ -17,7 +17,9 @@
 		 	onSelect: function(dateText, inst) { 
 		 		if (params.mainContentType == "facebook"){
 					loadStatusUpdatesForDate();
-		 		} else{
+		 		} else if (params.mainContentType == "sms"){
+		 			loadSmsForDate();
+		 		}else{
 			 		showLoading(true);
 		 			loadContentForDate();
 		 		}
@@ -108,6 +110,15 @@
 		});
 	}
 
+	function loadSmsForDate(){
+		var theDate = $("#datepicker").datepicker("getDate");
+		theDate = $.datepicker.formatDate('yy-mm-dd', $("#datepicker").datepicker("getDate"));
+		$("#displayDate").html(params.diplayDateInput);
+		$("#contentArea1").load("includes/smsContent.php?dateText="+theDate, function(){
+			updateDatePicker(false);
+		});
+	}
+	
 	function loadStatusUpdatesForDate(){
 		var theDate = $("#datepicker").datepicker("getDate");
 		theDate = $.datepicker.formatDate('yy-mm-dd', $("#datepicker").datepicker("getDate"));

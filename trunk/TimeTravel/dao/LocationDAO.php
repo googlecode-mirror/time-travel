@@ -27,7 +27,6 @@ class LocationDAO {
 		try {
 			$con = new PDO(GlobalConfig::db_pdo_connect_string, GlobalConfig::db_username, GlobalConfig::db_password);
 			$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-			$dbName = GlobalConfig::db_name;
 			$stmt = $con->prepare("select * from location where dayid=:dayid order by theTimestamp");
 			$stmt->bindParam(':dayid', $dayId);
 		

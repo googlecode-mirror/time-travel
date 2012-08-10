@@ -5,7 +5,6 @@ var loginRedirectUrl = 'index.php?response=pictures';
 $(document).ready(function() {
 	loaded = true;
 	//showLoading(true);
-
 	isUserLoggedIn("refresh", null);
 
 	$("#password").keypress(function(event) {
@@ -25,10 +24,26 @@ $(document).ready(function() {
 	
 	if (params.mainContentType == "facebook"){
 		loadStatusUpdate(); 
+	} else if (params.mainContentType == "email"){
+		loadEmailContent(); 
+	} else if (params.mainContentType == "sms"){
+		loadSMSContent(); 
 	} else {
 		loadPictures();
 	}
 });
+
+function loadSMSContent(){
+	$("#contentArea1").load("includes/smsContent.php", function(){
+		//updateDatePicker();
+	});
+}
+
+function loadEmailContent(){
+	$("#contentArea1").load("includes/emailContent.php", function(){
+		//updateDatePicker();
+	});
+}
 
 function loadStatusUpdate(){
 	$("#contentArea1").load("includes/facebookContent.php", function(){
