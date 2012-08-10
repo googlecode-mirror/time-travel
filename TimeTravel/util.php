@@ -33,6 +33,36 @@ class Util{
 	public static function getFriendlyDate($inputDate){
 					
 	}
+	
+	/**
+	 * Used to extract the name of the person an sms (gmail)
+	 */
+	public static function getSourceName($string){
+		$end = strpos($string, '<');
+		$sender = trim(substr($string, 0, $end));
+		if ($sender === ""){
+			return "Me"	;
+		} else {
+			return trim(substr($string, 0, $end));
+		}
+		
+		/* if (strpos($string, '"') === false){
+			echo strpos($string, '"');
+			$source = split(" ", $string);
+			return $source[0];
+		} else if (substr_count($string, '"') == 2) {
+			$start = strpos($string, '"');
+			$end = strrpos($string, '"')+1;
+			return substr($string, $start, $end);
+		} else {
+			$from = split('"', $string);
+			if(strpos($string, '"') == 0){
+				return $from[1];
+			} else {
+				return $from[0];
+			}
+		} */
+	}
 }
 
 ?>
