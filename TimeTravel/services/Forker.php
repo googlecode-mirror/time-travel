@@ -1,5 +1,6 @@
 <?php 
 require_once(dirname(dirname(__FILE__)) .'/services/BusinessLogic.php');
+require_once(dirname(dirname(__FILE__)) . "/services/EmailServices.php");
 require_once(dirname(dirname(__FILE__)) .'/conf.php');
 require_once(dirname(dirname(__FILE__)) .'/Logger.php');
 

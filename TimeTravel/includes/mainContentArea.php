@@ -4,6 +4,7 @@
 	require_once(dirname(dirname(__FILE__)) . '/dao/PictureDAO.php');
 	require_once(dirname(dirname(__FILE__)) . '/dao/UserDAO.php');
 	require_once(dirname(dirname(__FILE__)) . '/dao/LocationDAO.php');
+	require_once(dirname(dirname(__FILE__)) . '/dao/GmailDAO.php');
 	require_once(dirname(dirname(__FILE__)) .'/conf.php');
 	
 	date_default_timezone_set('Africa/Johannesburg');
@@ -280,7 +281,7 @@ function loadThisImage(imageId, imageUrl, refresh){
 	var url = imageUrl;
 	var img = new Image();
 
-	//refresh = true;
+	refresh = true;
     if (refresh){
         var numRand = Math.random();
     	img.src = url+"?rand="+numRand;
@@ -473,24 +474,64 @@ function updateSelectedTimeForNewDate(control){
 			}
 			
 			
+			$onlyMarkFirstAndLastPoints = false;
+			$numOfPoints = sizeof($geoLocations);
+			if ($numOfPoints > 26){
+				$onlyMarkFirstAndLastPoints = true;
+			}
+			
+			$count = 0;
 			$label = "A";
 			foreach ($geoLocations as $location){
-				$url .= "&markers=label:". $label."|";
-				$url .=$location->latitude.",".$location->longitude;
-				$label++;
+				$count++;
+				if (($onlyMarkFirstAndLastPoints && ($count == 1)) || ($onlyMarkFirstAndLastPoints && ($count == $numOfPoints))){
+					$url .= "&markers=label:". $label."|";
+					$url .=$location->latitude.",".$location->longitude;
+					$label++;
+				} else if (!$onlyMarkFirstAndLastPoints){
+					$url .= "&markers=label:". $label."|";
+					$url .=$location->latitude.",".$location->longitude;
+					$label++;
+				}
 			}
 			
 			error_log("URL: ".$url);
 			
-			if ($count > 0){
+			if ($numOfPoints > 0){
 		?>
 		<div id="geoMap" class="formlabel" style="display:block;">
 			<img src="<?php echo $url?>" style="position: relative; left: -6px;"></img>
 		</div>
+		<br/>
 		<?php }?>
-	</div>
 	
-
+		
+	
+		<!-- SMS's -->
+		<?php 
+			$gmailDAO = new GmailDAO();
+			$userSubscribedForSms = $gmailDAO->hasUserSetupContentUpdate($userid, 'sms');
+			if ($userSubscribedForSms){
+				$smsList = $gmailDAO->getCommunicationContentForDay($dayToDisplay, "sms");
+				$smsList = array_reverse($smsList);
+				foreach ($smsList as $sms){
+				
+	?>
+		<div style="position: relative; left: 0px; float: left;"><?php echo $sms->from?></div>
+	 	<div style="position: relative; left: 0px; float: right;"><?php echo date("H:m:s", strtotime($sms->timestamp))?></div>
+	 	<hr width="100%" size="1">
+	 	<p class="formlabel" style="text-align: left; background-color: #FAF5F5;"><?php echo $sms->body?></p>
+		
+	
+	<?php 
+				}
+			}
+		?>
+		
+		
+		
+		
+</div>
 <div id="picOverlay" style="display: none;">
 	<div id="pictureDiv" align="center">
 	</div>

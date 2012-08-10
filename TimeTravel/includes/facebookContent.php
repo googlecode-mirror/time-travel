@@ -135,7 +135,11 @@ if (isset($_SESSION['access_token'])){
 <button  onclick="TokenToSession();">Get Statuses</button> -->
 
 <?php if (!$hasFbToken) {?>
-
+<br/><br/>
+<div>
+	<img src="/images/facebook.jpg" width="60"></img>
+</div>
+<br/><br/>
 <div id="fbRegisterDiv" class="formlabel">You have not set up your Facebook account here. If you do, we can show you your status updates on
 	the chosen date so that you may accurately reconstruct the day.</div>
 

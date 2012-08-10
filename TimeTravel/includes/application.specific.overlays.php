@@ -13,3 +13,14 @@
 		<?php  }?>
 	</select>
 </span>
+
+<div id="gmailFolderList" style="display: none;">
+	<table width="100%" border="0" style="font-size: 1.0em">
+		<thead id="gmailFolderList-head">
+			<td width="5%" class="ui-widget-header"><input type="checkbox"/> </td>
+			<td class="ui-widget-header">
+				Folder
+			</td>
+		</thead>
+	</table>		
+</div>

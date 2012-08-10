@@ -1,4 +1,7 @@
 <?php
+
+date_default_timezone_set('Africa/Johannesburg');
+
 class GlobalConfig
 {
 	const db_host_name  = 'localhost';

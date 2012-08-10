@@ -9,7 +9,6 @@ require_once(dirname(dirname(__FILE__)) . '/dto/Action.php');
 require_once(dirname(dirname(__FILE__)) .'/conf.php');
 require_once(dirname(dirname(__FILE__)) .'/Logger.php');
 require_once(dirname(dirname(__FILE__)) .'/services/Forker.php');
-
 date_default_timezone_set('Africa/Johannesburg');
 
 class BusinessLogic{
@@ -21,7 +20,7 @@ class BusinessLogic{
 	private static $securityServices;
 
 	function __construct() {
-		session_start();
+		//session_start();
 		self::$responder = new Responder;
 		self::$locationDAO = new LocationDAO();
 		self::$userDAO = new UserDAO();
