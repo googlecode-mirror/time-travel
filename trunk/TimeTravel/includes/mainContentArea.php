@@ -432,14 +432,13 @@ function updateSelectedTimeForNewDate(control){
 		<?php
 			if ($picturesFound) {
 				$pictureTime = date("g:i a", strtotime($picture->timetaken));
-			} 
 			
 		?>
 				
 		 
 		<!-- <div class="formlabel" style="display: <?php echo$picturesFound? "none" : "block"; ?>;">No Pictures taken on this day.</div>  -->
 		
-		<div class="ui-datepicker-inline ui-datepicker ui-widget ui-widget-content ui-helper-clearfix" style="padding-top: 5px; position: relative; left: 0px; width:450px; display: <?php echo$picturesFound? "block" : "none"; ?>;">
+		<div class="ui-datepicker-inline ui-datepicker ui-widget ui-widget-content ui-helper-clearfix" style="padding-top: 5px; position: relative; left: 0px; width:450px; display: block; ?>;">
 			<a href="#" onclick="callPictureRotate('left');" title="Rotate picture left"><img src="/images/rotate-left.png"width="22"/></a>&nbsp;&nbsp;
 			<a href="#" onclick="callPictureRotate('right');" title="Rotate picture right"><img src="/images/rotate-right.png"width="22"/></a>&nbsp;&nbsp;
 			<a href="#" onclick="showCaptionOverlay();" title="Edit caption"><img src="/images/comment.png"width="22"/></a>&nbsp;&nbsp;
@@ -447,13 +446,14 @@ function updateSelectedTimeForNewDate(control){
 		</div>
 		<br/><br/>
 		
+		<?php }?>
 		
 		<!-- STATUS UPDATES -->
 		<?php if ($statusUpdateFound) {
 				$statusUpdateTime = date("g:i a", strtotime($statusUpdate->theDate));
 			 ?>
-		<div class="formlabel" style="display:block;">
-			 <div style="font-size: 1.1em; text-align: left;">"<?php echo $statusUpdate->message ?>"</div><br/>
+		<div class="formlabel ui-corner-top" style="display:block;">
+			 <div style="font-size: 1.1em; text-align: left; background-color: #FAF5F5; padding: 5px;"><img src="/images/facebook.jpg" width="20"></img>&nbsp;&nbsp; "<?php echo $statusUpdate->message ?>"</div><br/>
 			 <div style="font-size: 0.8em; text-align: right;"><?php echo $statusUpdateTime ?></div>
 		</div>
 		
