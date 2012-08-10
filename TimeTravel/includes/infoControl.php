@@ -7,7 +7,6 @@
 <script>
 	$(document).ready(function(){
 		$("button").button();
-		
 	});
 
 	$(function() {
@@ -85,8 +84,8 @@
 			loadRandomDateStatusUpdates();
  		else {
  			$.get("/includes/mainContentArea.php", function(data) {
- 				 $("#contentArea1").html(data);
- 				updateDatePicker();
+ 				$("#contentArea1").html(data);
+ 				updateDatePicker(null);
  			});
  		}
 	}
@@ -142,18 +141,5 @@
 		params.chosenDate = targetDate;
 		loadContentForDate(targetDate);
 	}
-
-	function updateDatePicker(changeDatepicker){
-		if (changeDatepicker == null){
-			$("#datepicker").datepicker("setDate", params.chosenDate);
-		}
-
-		$("#displayDate").html(params.diplayDateInput);
-		console.log("chosenDate: "+params.chosenDate);
-		if (params.chosenDate != null){
-			$("#year").val(params.chosenDate.substring(0, 4));
-			$("#month").val(params.chosenDate.substring(5, 7));
-			
-		}
-	}
+	
 </script>

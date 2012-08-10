@@ -51,7 +51,7 @@ function loadStatusUpdate(){
 	});
 }
 
-function updateDatePicker(){
+/*function updateDatePicker(){
 	$("#datepicker").datepicker("setDate", params.chosenDate);
 	
 	$("#displayDate").html(params.diplayDateInput);
@@ -61,7 +61,7 @@ function updateDatePicker(){
 		$("#month").val(params.chosenDate.substring(5, 7));
 		
 	}
-}
+}*/
 
 function loadPictures(){
 	$("#contentArea1").load("includes/mainContentArea.php", function(){
@@ -71,4 +71,19 @@ function loadPictures(){
 
 function showPictureUploadDiv(){
 	$("#actionArea").html($("#uploadPicsDiv").html());
+}
+
+function updateDatePicker(changeDatepicker){
+	console.log(params.chosenDate);
+	if (changeDatepicker == null){
+		$("#datepicker").datepicker("setDate", params.chosenDate);
+	}
+
+	$("#displayDate").html(params.diplayDateInput);
+	console.log("chosenDate: "+params.chosenDate);
+	if (params.chosenDate != null){
+		$("#year").val(params.chosenDate.substring(0, 4));
+		$("#month").val(params.chosenDate.substring(5, 7));
+		
+	}
 }

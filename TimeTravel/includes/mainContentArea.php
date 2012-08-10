@@ -353,13 +353,20 @@ function updateSelectedTimeForNewDate(control){
 			if (isset($_GET["dateText"])){
 				$theDate = $_GET["dateText"];
 				$dayToDisplay = $dayDAO->getIdForDay($userid, $theDate);
-				$chosenDate = date("Y-m-d", strtotime($theDate));
-				$diplayDate = date("Y F j l", strtotime($theDate));
+				//$chosenDate = date("Y-m-d", strtotime($theDate));
+				//$diplayDate = date("Y F j l", strtotime($theDate));
 			} else {
 				$dayToDisplay = $dayDAO->getRandomDay($userid);
 			}
 			
 			error_log("date : ". $dayToDisplay);
+			//echo $dayToDisplay." -- ". $dayDAO->getDateForDayId($userid, $dayToDisplay);
+			
+			
+			$chosenDate = date("Y-m-d", strtotime($dayDAO->getDateForDayId($userid, $dayToDisplay)));
+			$diplayDate = date("Y F j l", strtotime($dayDAO->getDateForDayId($userid, $dayToDisplay)));
+			$_SESSION['chosenDate'] = $chosenDate;
+			$_SESSION['diplayDate'] = $diplayDate;
 			
 			$pictureDAO = new PictureDAO();
 			$pictures = $pictureDAO->getAllPicturesForDay($dayToDisplay);
@@ -376,6 +383,13 @@ function updateSelectedTimeForNewDate(control){
 			$picturesFound = false;
 			
 		?>
+		
+		<script type="text/javascript">
+			$(document).ready(function()	{
+				params.chosenDate = "<?php echo$chosenDate?>";
+				params.diplayDateInput = "<?php echo$diplayDate?>";
+			});
+		</script>
 			
 			<!--  <img src="showimage.php?image_id=<?php echo $picture->id; ?>" alt="Image from DB" width="100%"/> -->
 		<div style="width: 400;">
@@ -413,25 +427,13 @@ function updateSelectedTimeForNewDate(control){
 				
 		<?php
 			if ($picturesFound) {
-				$chosenDate = date("Y-m-d", strtotime($picture->timetaken));
-				$diplayDate = date("Y F j l", strtotime($picture->timetaken));
 				$pictureTime = date("g:i a", strtotime($picture->timetaken));
 			} 
-
-			 $_SESSION['chosenDate'] = $chosenDate;
-			 $_SESSION['diplayDate'] = $diplayDate;
+			
 		?>
-		
-		<script type="text/javascript">
-		//$(document).ready(function()	{
-			//alert("<?php echo$chosenDate?>");
-			params.chosenDate = "<?php echo$chosenDate?>";
-			params.diplayDateInput = "<?php echo$diplayDate?>";
-		//});
-		</script>
-		
+				
 		 
-		<div class="formlabel" style="display: <?php echo$picturesFound? "none" : "block"; ?>;">No Pictures taken on this day.</div>
+		<!-- <div class="formlabel" style="display: <?php echo$picturesFound? "none" : "block"; ?>;">No Pictures taken on this day.</div>  -->
 		
 
 		
@@ -446,8 +448,6 @@ function updateSelectedTimeForNewDate(control){
 		
 		<!-- STATUS UPDATES -->
 		<?php if ($statusUpdateFound) {
-				$chosenDate = date("Y-m-d", strtotime($statusUpdate->theDate));
-				$diplayDate = date("Y F j l", strtotime($statusUpdate->theDate));
 				$statusUpdateTime = date("g:i a", strtotime($statusUpdate->theDate));
 			 ?>
 		<div class="formlabel" style="display:block;">
