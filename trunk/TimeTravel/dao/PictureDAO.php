@@ -171,7 +171,7 @@ class PictureDAO {
 		
 		$dayId = $this->isDayForUserExisting($userid, $date);
 		if ($dayId != -1){
-			Logger::log("day exists -- > ". $dayId);
+			//Logger::log("day exists -- > ". $dayId);
 			return $dayId;
 		}
 		

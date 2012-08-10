@@ -82,19 +82,23 @@ class EmailServices {
 
 
 	public function updateGmailContent($parameters){
-		Logger::log("in updateGmailContent...");
-		$username = $parameters["username"];
-		$userid = self::$securityServices->getUserByUsername($username)->id;
+		try {
+			Logger::log("in updateGmailContent...");
+			$username = $parameters["username"];
+			$userid = self::$securityServices->getUserByUsername($username)->id;
 
-		error_log("userid: ".$userid);
-		$foldersToUpdate = self::$gmailDAO->getSMSfolders($userid);
-		error_log("foldersToUpdate: ". sizeof($foldersToUpdate));
+			Logger::log("userid: ".$userid);
+			$foldersToUpdate = self::$gmailDAO->getSMSfolders($userid);
+			error_log("foldersToUpdate: ". sizeof($foldersToUpdate));
 
-		foreach ($foldersToUpdate as $folderName => $lastupdate){
-			Logger::log("folder: ".$folderName);
-			$this->fetchFolderContent($userid, $folderName, $lastupdate);
+			foreach ($foldersToUpdate as $folderName => $lastupdate){
+				Logger::log("folder: ".$folderName);
+				$this->fetchFolderContent($userid, $folderName, $lastupdate);
+			}
+		} catch (Exception $e){
+			Logger::log("ERROR -- updateGmailContent ".$e->getMessage());
 		}
-		
+		Logger::log("EmailService -- Done updating GMAIL!");
 	}
 
 	public function fetchFolderContent($userid, $folderName, $lastupdate){
@@ -113,11 +117,11 @@ class EmailServices {
 		
 		$today = date('d-M-Y', time());
 		
-		
 		$startDate = date("d-M-Y", strtotime($lastupdate));
 		//$startDate = date("d-M-Y", strtotime('2012-08-05'));
 		while ($startDate != $today){
 			set_time_limit(0);
+			Logger::log("fetching Gmail content for date: ".$startDate);
 			$emails = imap_search($inbox,'ON '.$startDate);
 			if($emails) {
 
