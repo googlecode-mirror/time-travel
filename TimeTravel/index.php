@@ -78,7 +78,7 @@ A:hover {text-decoration: underline;}
 </div>
 
 <div id="globalContaier" style="width: 100%; position: absolute; top: 40px;" align="center">
-		<div id="loggedInContentAread" style="width: 850px; display: <?php echo $loggedIn? "block" : "none" ?>;">
+		<div id="loggedInContentAread" style="width: 870px; display: <?php echo $loggedIn? "block" : "none" ?>;">
 			<div id="addInfoDiv" style="float: left; text-align: right;">
 				<div style="font-size: 0.9em; color: #999; font-weight: bold; margin-top: 12px; padding-right: 15px;"><a href="index.php?response=pictures">PICTURES</a></div>
 				<div style="font-size: 0.9em; color: #999; font-weight: bold; margin-top: 12px; padding-right: 15px;"><a href="index.php?response=facebook" >STATUS UPDATES</a></div>
@@ -87,14 +87,14 @@ A:hover {text-decoration: underline;}
 				<div style="font-size: 0.9em; color: #999; font-weight: bold; margin-top: 12px; padding-right: 15px;"><a href="index.php?response=calls" >PHONE CALLS</a></div>
 				<div style="font-size: 0.9em; color: #999; font-weight: bold; margin-top: 12px; padding-right: 15px;"><a href="index.php?response=calls" >GEO LOCATION</a></div>
 			</div>
-			<div style="float: left; border-left:1px solid #E0E0E0; height: 600px; padding-left: 10px; width: 55%;">
+			<div style="float: left; border-left:1px solid #E0E0E0; height: 600px; padding-left: 10px; width: 56%;">
 				<br/>
 				<div id="contentArea1" style="height: 600px; overflow: hidden; overflow-y: scroll; padding-right: 10px;"></div>
 			</div>
 
-			<div style="float: right; right: 0px; width: 30%; border-left:1px solid #E0E0E0;">
+			<div style="float: right; right: 0px; border-left:1px solid #E0E0E0; width: 28%;">
 				<br/>
-				<div id="contentArea2" align="left" style="padding-left: 15px;"></div>
+				<div id="contentArea2" align="left" style="padding-left: 5px;"></div>
 
 			</div>
 		</div>

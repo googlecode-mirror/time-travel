@@ -191,6 +191,7 @@ $statusUpdates = $userDAO->retrieveAllStatusUpdatesForDay($userid, $dayToDisplay
 
 foreach ($statusUpdates as $statusUpdate){
 	error_log("status update : ". $statusUpdate->message);
+	$statusUpdateTime = date("g:i a", strtotime($statusUpdate->theDate));
 	?>
 
 <script type="text/javascript">
@@ -198,16 +199,9 @@ foreach ($statusUpdates as $statusUpdate){
 				params.diplayDateInput = "<?php echo$diplayDate?>";
 			</script>
 
-<div class="formlabel">
-	<div style="font-size: 1.1em; text-align: left;">
-		"
-		<?php echo $statusUpdate->message ?>
-		"
+	<div class="formlabel ui-corner-top" style="display:block;">
+		 <div style="font-size: 1.1em; text-align: left; background-color: #FAF5F5; padding: 5px;"><img src="/images/facebook.jpg" width="20"></img>&nbsp;&nbsp; "<?php echo $statusUpdate->message ?>"</div><br/>
+		 <div style="font-size: 0.8em; text-align: right;"><?php echo $statusUpdateTime ?></div>
 	</div>
-	<br />
-	<div style="font-size: 0.8em; text-align: right;">
-		<?php echo date("g:i a", strtotime($statusUpdate->theDate)) ?>
-	</div>
-</div>
 
 <?php }?>

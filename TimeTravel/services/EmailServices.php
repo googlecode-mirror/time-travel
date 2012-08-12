@@ -116,8 +116,8 @@ class EmailServices {
 		$inbox = $this->getImapConnection($username, $password, $folderName);
 		
 		$tomorrow = date('d-M-Y', mktime(0,0,0,date("m", time()),date("d", time())+1,date("Y", time())));
+		$startDate = date('d-M-Y', mktime(0,0,0,date("m", time()),date("d", time())-1,date("Y", time())));
 		
-		$startDate = date("d-M-Y", strtotime($lastupdate));
 		while ($startDate != $tomorrow){
 			set_time_limit(0);
 			Logger::log("fetching Gmail content for date: ".$startDate);
