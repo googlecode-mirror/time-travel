@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <controller>
 	<action>
+		<name>sharePicturesToOtherUser</name>
+		<service-class-name>BusinessLogic</service-class-name>
+		<postlogon>true</postlogon>
+		<expected-params>
+			<param required="true">picturelist</param>
+			<param required="true">shareToId</param>
+		</expected-params>
+	</action>
+	<action>
 		<name>updateGmailContent</name>
 		<service-class-name>EmailServices</service-class-name>
 		<forker>true</forker>

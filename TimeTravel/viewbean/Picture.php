@@ -12,6 +12,7 @@ class Picture {
 	public $latitude;
 	public $longitude;
 	public $dayId;
+	public $sharerUsername;
 
 	public function __construct($id, $description, $location, $timetaken, $fileType, $payload, $filename)  {
 		$this->id = $id;

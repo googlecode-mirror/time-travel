@@ -4,6 +4,29 @@ require_once(dirname(dirname(__FILE__)) .'/viewbean/StatusUpdate.php');
 
 class UserDAO {
 	
+	public function getIdForSharedContentType($contentType){
+		try {
+			$con = new PDO(GlobalConfig::db_pdo_connect_string, GlobalConfig::db_username, GlobalConfig::db_password);
+			$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			$stmt = $con->prepare("select id from contenttype where description = :contenttype");
+			$stmt->bindParam(':contenttype', $contentType);
+		
+			if ($stmt->execute()){
+				while ($row = $stmt->fetch()){
+					return $row["id"];
+				}
+			}
+		
+		
+		} catch (PDOException $e) {
+			print "Error!: " . $e->getMessage() . "<br/>";
+			throw new Exception('004');
+		}
+		return false;
+	}
+	
+	
+	
 	private function doesStatusUpdateExist($statusUpdateId){
 		try {
 			$con = new PDO(GlobalConfig::db_pdo_connect_string, GlobalConfig::db_username, GlobalConfig::db_password);

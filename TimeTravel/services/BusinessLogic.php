@@ -28,7 +28,23 @@ class BusinessLogic{
 		self::$dayDAO = new DayDAO();
 		self::$securityServices = new SecurityService();
 	}
+	
 
+	public function sharePicturesToOtherUser($parameters){
+		$pictureArray = split(",", $parameters["picturelist"]);
+		$shareToId = $parameters["shareToId"];
+		foreach ($pictureArray as $pictureId){
+			if (trim($pictureId) == "") continue;
+			$picture = self::$pictureDAO->getPictureById($pictureId);
+			try {
+				self::$pictureDAO->createDay($shareToId, $picture->timetaken);
+				self::$pictureDAO->sharePictureToOtherUser($_SESSION["userid"], $shareToId, $pictureId);
+			} catch (Exception $e){}
+		}
+		//TODO We send the shareTo User an email with a link
+	}
+	
+	
 	public function recordMyLocation($parameters){
 		$user = self::$securityServices->getUserByUsername($parameters["username"]);
 		
@@ -271,6 +287,9 @@ class BusinessLogic{
 		
 		$parameters["version"] = 'optimized';
 		$this->doImageRotate($parameters);
+		
+		$parameters["version"] = 'thumbnails';
+		Forker::doPost($parameters);
 		
 		$parameters["version"] = 'main';
 		Forker::doPost($parameters);

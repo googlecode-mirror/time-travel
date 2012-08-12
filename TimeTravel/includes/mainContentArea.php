@@ -7,6 +7,7 @@
 	require_once(dirname(dirname(__FILE__)) . '/dao/GmailDAO.php');
 	require_once(dirname(dirname(__FILE__)) .'/conf.php');
 	require_once(dirname(dirname(__FILE__)) .'/util.php');
+	require_once(dirname(dirname(__FILE__)) . '/services/securityServices.php');
 	
 	date_default_timezone_set('Africa/Johannesburg');
 ?>
@@ -338,6 +339,35 @@ function updateSelectedTimeForNewDate(control){
 	var theTime = $(control).parent().find(".hourTempl").val()+":"+$(control).parent().find(".minuteTempl").val();
 	$("#selectedTimeForNewDate").val(theTime);
 }
+
+
+function showPictureShareOverlay(){
+	$("#genericOverlay").load("/includes/pictureShareOverlay.php");
+	$("#genericOverlay").dialog( {
+		bgiframe : true,
+		autoOpen : false,
+		width : 600,
+		height : 280,
+		position: ['center'],
+		modal : true,
+		resizable : false,
+		title : "Share pictures",
+		//show: { show: 'slide', direction: "up" },
+		buttons : {
+			Cancel : function() {
+				$(this).dialog("destroy");
+			},
+			Share : function() {
+				if (validateInput()){
+					$(this).dialog("destroy");
+					doSharePictures();
+				}
+			}
+		}
+	});
+
+	$("#genericOverlay").dialog("open");
+}
 </script>
 	
 	<?php
@@ -353,27 +383,38 @@ function updateSelectedTimeForNewDate(control){
 			}
 			
 			$dayDAO = new DayDAO();
+			$securityService = new SecurityService();
 
 			if (isset($_GET["dateText"])){
 				$theDate = $_GET["dateText"];
 				$dayToDisplay = $dayDAO->getIdForDay($userid, $theDate);
-				//$chosenDate = date("Y-m-d", strtotime($theDate));
-				//$diplayDate = date("Y F j l", strtotime($theDate));
 			} else {
 				$dayToDisplay = $dayDAO->getRandomDay($userid);
 			}
 			
 			error_log("date : ". $dayToDisplay);
-			//echo $dayToDisplay." -- ". $dayDAO->getDateForDayId($userid, $dayToDisplay);
 			
+			if ($dayToDisplay === 0){
+				$chosenDate = date("Y-m-d", strtotime($theDate));
+				$diplayDate = date("Y F j l", strtotime($theDate));
+			} else {
+				$chosenDate = date("Y-m-d", strtotime($dayDAO->getDateForDayId($userid, $dayToDisplay)));
+				$diplayDate = date("Y F j l", strtotime($dayDAO->getDateForDayId($userid, $dayToDisplay)));
+			}
+
+			error_log("chosenDate : ". $chosenDate);
 			
-			$chosenDate = date("Y-m-d", strtotime($dayDAO->getDateForDayId($userid, $dayToDisplay)));
-			$diplayDate = date("Y F j l", strtotime($dayDAO->getDateForDayId($userid, $dayToDisplay)));
 			$_SESSION['chosenDate'] = $chosenDate;
 			$_SESSION['diplayDate'] = $diplayDate;
+			$_SESSION['dayToDisplay'] = $dayToDisplay;
 			
 			$pictureDAO = new PictureDAO();
 			$pictures = $pictureDAO->getAllPicturesForDay($dayToDisplay);
+			
+			$sharedpictures = $pictureDAO->getSharedPicturesForUser($userid, $chosenDate);
+			error_log("ID: ".sizeof($sharedpictures));
+			
+			$pictures = array_merge($pictures, $sharedpictures);
 			
 			//Facebook Statues
 			$userDAO = new UserDAO();
@@ -403,8 +444,13 @@ function updateSelectedTimeForNewDate(control){
 				<?php
 				foreach($pictures as $picture){
 					$picturesFound = true;
-					$pictureSrc =  '/pictures/'.$username.'/optimized/'.$picture->filename;
+					$pictureIsShared = isset($picture->sharerUsername) ? true : false;
+					$username = $pictureIsShared ? $picture->sharerUsername : $username;
+					
+					$pictureSrc =  '/pictures/'. $username.'/optimized/'.$picture->filename;
 					$mainPicUrl =  '/pictures/'.$username.'/main/'.$picture->filename;
+					$pictureDescription = ($picture->description == "" ? "" : "\""). $picture->description . ($picture->description == "" ? "" : "\"");
+					$pictureDescription = $pictureIsShared ? ("Shared to you by '".($securityService->getUserByUsername($picture->sharerUsername)->name))."'" : $pictureDescription;
 				?>
 				<!-- Each child div in #showcase represents a slide -->
 				<div class="showcase-slide">
@@ -417,7 +463,7 @@ function updateSelectedTimeForNewDate(control){
 					</div>
 					<!-- Put the caption content in a div with the class .showcase-caption -->
 					<div class="showcase-caption" style="width: 430px; left: 0px;">
-						<div class="picDescription" style="float: left"><?php echo ($picture->description == "" ? "" : "\"") ?><?php echo $picture->description ?><?php echo ($picture->description == "" ? "" : "\"") ?></div>
+						<div class="picDescription" style="float: left"><?php echo $pictureDescription ?></div>
 						
 						<div style="font-size: 0.7em; text-align: right; float: right;"><?php echo date("Y F j l g:i a", strtotime($picture->timetaken))?></div>
 					</div>
@@ -432,17 +478,19 @@ function updateSelectedTimeForNewDate(control){
 		<?php
 			if ($picturesFound) {
 				$pictureTime = date("g:i a", strtotime($picture->timetaken));
+				$pictureIsShared = isset($picture->sharerUsername) ? true : false;
 			
 		?>
 				
 		 
 		<!-- <div class="formlabel" style="display: <?php echo$picturesFound? "none" : "block"; ?>;">No Pictures taken on this day.</div>  -->
 		
-		<div class="ui-datepicker-inline ui-datepicker ui-widget ui-widget-content ui-helper-clearfix" style="padding-top: 5px; position: relative; left: 0px; width:450px; display: block; ?>;">
+		<div class="ui-datepicker-inline ui-widget ui-widget-content ui-helper-clearfix" style="padding-top: 5px; position: relative; left: 0px; width:450px; display: <?php echo $pictureIsShared ? "none" : "block"?>; ?>;">
 			<a href="#" onclick="callPictureRotate('left');" title="Rotate picture left"><img src="/images/rotate-left.png"width="22"/></a>&nbsp;&nbsp;
 			<a href="#" onclick="callPictureRotate('right');" title="Rotate picture right"><img src="/images/rotate-right.png"width="22"/></a>&nbsp;&nbsp;
 			<a href="#" onclick="showCaptionOverlay();" title="Edit caption"><img src="/images/comment.png"width="22"/></a>&nbsp;&nbsp;
-			<a href="#" onclick="showDateTakenOverlay();" title="Edit picture date"><img src="/images/calendar.png"width="22"/></a>
+			<a href="#" onclick="showDateTakenOverlay();" title="Edit picture date"><img src="/images/calendar.png"width="22"/></a>&nbsp;&nbsp;
+			<a href="#" onclick="showPictureShareOverlay();" title="Share pictures"><img src="/images/share.png"width="22"/></a>
 		</div>
 		<br/><br/>
 		
