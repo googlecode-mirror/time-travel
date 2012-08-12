@@ -9,6 +9,8 @@
  * Licensed under the MIT license:
  * http://www.opensource.org/licenses/MIT
  */
+error_reporting(E_ALL);
+ini_set('display_errors', '1');
 
 date_default_timezone_set('Africa/Johannesburg');
 require_once((dirname(dirname(dirname(dirname(__FILE__))))) .'/viewbean/Picture.php');
@@ -466,6 +468,9 @@ class UploadHandler
     
     		}
     		 
+    		var_dump($exif_ifd0);
+    		var_dump($exif_exif);
+    		
     		$timetaken = null;
     		 
     		$filename = $exif_file['FileName'];
@@ -473,25 +478,43 @@ class UploadHandler
     		if (isset($exif_exif['DateTimeOriginal'])){
     			//We get the date and time the picture was taken
     			try {
-    				$rawTimeTaken = $exif_exif['DateTimeOriginal'];
-    				error_log("EXIF TIME TAKEN : ".$rawTimeTaken);
-    				$timetaken = date("Y-m-d H:i:s", strtotime($rawTimeTaken));
+    				$exif_date = $exif_exif['DateTimeOriginal'];
+    				error_log("EXIF TIME TAKEN : ".$exif_date);
+    				$exif_timetaken = date("Y-m-d H:i:s", strtotime($exif_date));
     			} catch (Exception $e){
-    		
+					error_log($e->getMessage());
     			}
-    		} else  if (isset($exif_ifd0['DateTime'])){
+    		}
+
+    		if (isset($exif_ifd0['DateTime'])){
     			//We get the date and time the picture was taken
     			try {
-    				$rawTimeTaken = $exif_ifd0['DateTime'];
-    				error_log("IFDO TIME TAKEN : ".$rawTimeTaken);
-    				$timetaken = date("Y-m-d H:i:s", strtotime($rawTimeTaken));
+    				$ifd0_date = $exif_ifd0['DateTime'];
+    				error_log("IFDO TIME TAKEN : ".$ifd0_date);
+    				$ifd0_timetaken = date("Y-m-d H:i:s", strtotime($ifd0_date));
     			} catch (Exception $e){
-    		
+    				error_log($e->getMessage());
     			}
-    		} else  {
+    		}
+
+    		//We chose the earliest date of the 2
+    		if (isset($exif_date) && (isset($ifd0_date))){
+    			$rawTimeTaken = ($exif_date < $ifd0_date) ? $exif_date : $ifd0_date;
+    			error_log("FINAL TIME TAKEN : ".$rawTimeTaken);
+    			$timetaken = date("Y-m-d H:i:s", strtotime($rawTimeTaken));
+    		} else if (isset($exif_date)){
+       			$rawTimeTaken = $exif_date;
+    			error_log("FINAL TIME TAKEN : ".$rawTimeTaken);
+    			$timetaken = date("Y-m-d H:i:s", strtotime($rawTimeTaken));
+    		} else if (isset($ifd0_date)){
+    			 
+    			$rawTimeTaken = $ifd0_date;
+    			error_log("FINAL TIME TAKEN : ".$rawTimeTaken);
+    			$timetaken = date("Y-m-d H:i:s", strtotime($rawTimeTaken));
+    		}else  {
     			$rawTimeTaken = $exif_file['FileDateTime'];
     			$timetaken = date("Y-m-d H:i:s", $rawTimeTaken);
-    		
+
     		}
     		 
     		 

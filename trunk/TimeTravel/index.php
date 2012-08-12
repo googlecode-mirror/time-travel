@@ -120,6 +120,6 @@ A:hover {text-decoration: underline;}
 	
 	//include("includes/footer.php");
 ?>
-
+<div id="genericOverlay" style="display: none;"></div>
 </body>
 </html>
