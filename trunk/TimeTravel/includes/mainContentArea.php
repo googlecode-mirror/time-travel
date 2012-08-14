@@ -388,8 +388,11 @@ function showPictureShareOverlay(){
 			if (isset($_GET["dateText"])){
 				$theDate = $_GET["dateText"];
 				$dayToDisplay = $dayDAO->getIdForDay($userid, $theDate);
-			} else {
+			} else if (isset($_GET["randOption"])) {
 				$dayToDisplay = $dayDAO->getRandomDay($userid, $_GET["randOption"]);
+			} else {
+				$theDate = date("Y-m-d", time());
+				$dayToDisplay = $dayDAO->getIdForDay($userid, $theDate);
 			}
 			
 			error_log("date : ". $dayToDisplay);
@@ -566,6 +569,9 @@ function showPictureShareOverlay(){
 				$smsList = $gmailDAO->getCommunicationContentForDay($dayToDisplay, "sms");
 				$smsList = array_reverse($smsList);
 				foreach ($smsList as $sms){
+					//if the body is longer than 160 chars, it's not an sms, probably an mms. so we skip
+					if (strlen($sms->body) > 160) continue; 
+					
 					$source = Util::getSourceName($sms->from);
 				
 	?>
@@ -575,7 +581,7 @@ function showPictureShareOverlay(){
 			<span align="right"><?php echo date("H:m:s", strtotime($sms->timestamp))?></span>
 		</h3>
 		<div>
-	 		<p class="formlabel" style="text-align: left; background-color: #FAF5F5;"><?php echo $sms->body?></p>
+	 		<p class="formlabel" style="text-align: left; background-color: #FAF5F5;"><?php echo trim($sms->body)?></p>
 		</div>
 	
 	<?php 
