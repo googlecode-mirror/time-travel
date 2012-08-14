@@ -31,5 +31,7 @@ CREATE TABLE  `journal`.`sharedcontent` (
 
 ALTER TABLE `journal`.`sharedcontent` ADD UNIQUE INDEX `sharedcontent_Index_Unique_Key`(`contentid`, `contenttype`, `sharerid`, `sharedforid`);
 
+ALTER TABLE `journal`.`status_update` ADD INDEX `Index_status_update_i0`(`dayid`);
+
 
 commit;

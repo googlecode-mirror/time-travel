@@ -7,6 +7,10 @@
 <script>
 	$(document).ready(function(){
 		$("button").button();
+
+		$(".randBtn").click(function(button){
+			toggleRandomizeButton(this);
+		});
 	});
 
 	$(function() {
@@ -36,10 +40,10 @@
 <div id="picturedatepicker"></div>
 
 <br/>
-<div id="displayDate" style="font-size: 1.4em; color: #C0C0C0;"></div>
+<div id="displayDate" style="font-size: 1.4em; color: #C0C0C0; background-color: #FAF5F5; padding: 3px;"></div>
 
 
-<br/><br/>
+<br/>
 <button onclick="reloadPage();">Random</button>
 <button onclick="gotoPictureUpload();" >Upload Pictures</button>
 
@@ -76,6 +80,18 @@
 
 <button style="font-size: 1.0em; color: #C0C0C0;" onclick="doTimeTravel();">GO</button>
 
+<fieldset style="height: 120px; padding: 0px; position: relative; top: 6px;" class="ui-state-default">
+<div class="ui-widget-header" style="padding: 2px;">Randomize by:</div>
+<div >
+
+	<button class="randBtn" style="padding-right: 0em;" title="Randomize by pictures" value="picture"><img src="/images/picture.png"/></button>
+	<button class="randBtn" style="padding-right: 0em;" title="Randomize by status updates" value="s-update"><img src="/images/update.png"/></button>
+	<button class="randBtn" style="padding-right: 0em;" title="Randomize by emails" value="email"><img src="/images/email_attach.png"/></button>
+	<button class="randBtn" style="padding-right: 0em;" title="Randomize by sms's" value="sms"><img src="/images/email.png"/></button>
+	<button class="randBtn" style="padding-right: 0em;" title="Randomize by phone calls" value="phone"><img src="/images/phone.png"/></button>
+
+</div>
+</fieldset>
 
 <script type="text/javascript">
 	function reloadPage(){
@@ -83,7 +99,7 @@
 		if (params.mainContentType == "facebook")
 			loadRandomDateStatusUpdates();
  		else {
- 			$.get("/includes/mainContentArea.php", function(data) {
+ 			$.get("/includes/mainContentArea.php?randOption="+getRandomizeOptions(), function(data) {
  				$("#contentArea1").html(data);
  				updateDatePicker(null);
  			});
@@ -140,6 +156,22 @@
 		$("#datepicker").datepicker("setDate", targetDate);
 		params.chosenDate = targetDate;
 		loadContentForDate(targetDate);
+	}
+
+	function toggleRandomizeButton(button){
+		if ($(button).filter(".ui-state-focus").size() == "1"){
+			$(button).removeClass("ui-state-focus");
+		} else {
+			$(button).addClass("ui-state-focus");
+		}
+	}
+
+	function getRandomizeOptions(){
+		var randOptions="|";
+		$(".randBtn").filter(".ui-state-focus").each(function(){
+			randOptions += $(this).attr("value") +"|";
+		});
+		return randOptions;
 	}
 	
 </script>

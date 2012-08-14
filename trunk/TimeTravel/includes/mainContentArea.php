@@ -389,7 +389,7 @@ function showPictureShareOverlay(){
 				$theDate = $_GET["dateText"];
 				$dayToDisplay = $dayDAO->getIdForDay($userid, $theDate);
 			} else {
-				$dayToDisplay = $dayDAO->getRandomDay($userid);
+				$dayToDisplay = $dayDAO->getRandomDay($userid, $_GET["randOption"]);
 			}
 			
 			error_log("date : ". $dayToDisplay);
@@ -416,7 +416,7 @@ function showPictureShareOverlay(){
 			
 			$pictures = array_merge($pictures, $sharedpictures);
 			
-			//Facebook Statues
+			//Facebook Statuses
 			$userDAO = new UserDAO();
 			$statusUpdate = $userDAO->retrieveRandomStatusUpdateForDay($userid, $dayToDisplay);
 			

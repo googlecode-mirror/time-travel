@@ -54,11 +54,37 @@ class DayDAO {
 		return false;
 	}
 
-	public function getRandomDay($userid){
+	public function getRandomDay($userid, $options){
+		if (isset($options)){
+			error_log("I need to randomize:: ".$options);
+		}
+		
+		$query = " ";
+		if (strpos($options, "picture") > 0){
+			$query .= " and id in (select dayid from picture)";
+		}
+		
+		if (strpos($options, "sms") > 0){
+			$query .= " and id in (select dayid from communicationcontent where communicationtype='sms')";
+		}
+
+		if (strpos($options, "email") > 0){
+			$query .= " and id in (select dayid from communicationcontent where communicationtype='email')";
+		}
+		
+		if (strpos($options, "s-update") > 0){
+			$query .= " and id in (select dayid from status_update)";
+		}
+		
+		if (strpos($options, "phone") > 0){
+			$query .= " and id in (select dayid from communicationcontent where communicationtype='call')";
+		}
+		
+		error_log("QUERY: ".$query);
 		try {
 			$con = new PDO(GlobalConfig::db_pdo_connect_string, GlobalConfig::db_username, GlobalConfig::db_password);
 			$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-			$stmt = $con->prepare("SELECT * FROM user_day WHERE userid = :userid ORDER BY RAND() LIMIT 1");
+			$stmt = $con->prepare("select id from user_day where userid=:userid ". $query. " order by rand() limit 1");
 			$stmt->bindParam(':userid', $userid);
 
 			$result = 0;
