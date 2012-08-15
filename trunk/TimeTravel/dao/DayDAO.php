@@ -9,7 +9,7 @@ class DayDAO {
 	 */
 	public function deleteDayIfUnused($dayId){
 		error_log("tryin to deleteDay..".$dayId);
-		if ((!$this->isDayUsed($dayId, "picture") && (!$this->isDayUsed($dayId, "status_update")))){
+		if ((!$this->isDayUsed($dayId, "picture") && (!$this->isDayUsed($dayId, "status_update") && (!$this->isDayUsed($dayId, "location")) && (!$this->isDayUsed($dayId, "communicationcontent"))))){
 			$this->deleteDay($dayId);
 		}
 
@@ -197,5 +197,28 @@ class DayDAO {
 		}
 
 		return $result;
+	}
+	
+	public function getAllDayId(){
+		try {
+			$con = new PDO(GlobalConfig::db_pdo_connect_string, GlobalConfig::db_username, GlobalConfig::db_password);
+			$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			$dbName = GlobalConfig::db_name;
+			$stmt = $con->prepare("select id from user_day order by id asc");
+
+			$itemlist = array();
+			if ($stmt->execute()){
+				while ($row = $stmt->fetch()){
+					$id = $row["id"];
+					array_push($itemlist, $id);
+				}
+			}
+		
+		} catch (PDOException $e) {
+			print "Error!: " . $e->getMessage() . "<br/>";
+			throw new Exception('018');
+		}
+		
+		return $itemlist;
 	}
 }

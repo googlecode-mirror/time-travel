@@ -105,12 +105,13 @@ error_log($userid." : status update : ". $chosenDate);
 		parms["action"] = "saveProviderFolders";
 		parms["type"] = 'sms_gmail';
 		parms["folders"] = folderList;
+		parms["syncStart"] = $("#syncStartYear").val()+"-"+$("#syncStartMonth").val()+"-01";
 
 		$.post(url, parms, function(resultData) {
 			resultData = parseResult(resultData);
 			var errorCode = $(resultData).find("code").text();
 			if (errorCode == 0) {
-				alert("Thank you! We are now pulling your emails from your provider. They will be available shortly.");
+				alert("Thank you! We are now pulling your sms's from your provider. They will be available shortly.");
 			} else {
 				alert($(resultData).find("errMessage").text());
 			}
@@ -158,7 +159,8 @@ error_log($userid." : status update : ". $chosenDate);
 		</tr>
 	</table>
 
-	<divs>
+	</div>
+	<div>
 <?php }	 else { 
 	
 	$smsList = $gmailDAO->getCommunicationContentForDay($dayToDisplay, "sms");

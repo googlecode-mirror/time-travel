@@ -1,5 +1,6 @@
 <?php 
 require_once(dirname(dirname(__FILE__)) . '/dao/PictureDAO.php');
+require_once(dirname(dirname(__FILE__)) . '/dao/UserDAO.php');
 
 //error_reporting(E_ERROR | E_PARSE);
 session_start();
@@ -12,9 +13,69 @@ if (isset($_SESSION['name'])) {
 	$dayToDisplay = $_SESSION['dayToDisplay'];
 }
 
+$userDAO = new UserDAO();
+$fbToken = $userDAO->getUserToken($userid);
+
 $pictureDAO = new PictureDAO();
 $pictures = $pictureDAO->getAllPicturesForDay($dayToDisplay);
 ?>
+
+<style>
+	.ui-autocomplete-loading { background: white url('images/ui-anim_basic_16x16.gif') right center no-repeat; }
+	#city { width: 25em; }
+</style>
+
+<script>
+var picShareOverlay = {};
+picShareOverlay.fbToken = "<?php echo $fbToken?>";
+
+
+	$(function() {
+		function log( message ) {
+			$( "<div/>" ).text( message ).prependTo( "#log" );
+			$( "#log" ).scrollTop( 0 );
+		}
+
+		$( "#city" ).autocomplete({
+			source: function( request, response ) {
+				$.ajax({
+					url: "https://graph.facebook.com/fql?q=SELECT name, pic_square FROM user WHERE uid IN(SELECT uid2 FROM friend WHERE uid1 = me()) AND strpos(lower(name), lower('"+ request.term  +"')) >=0&access_token=AAACEdEose0cBANATBE8LUkDadJXk88kCvlWkIwbZAvAg53ljBnRRm2hTyg5SV3sqEUQsUsNju5ngnnC6JAM2ZBE7Ppbs4MvVro0BIYywZDZD",
+					dataType: "jsonp",
+					data: {
+						featureClass: "P",
+						style: "full",
+						maxRows: 12,
+					},
+					success: function( data ) {
+						response( $.map( data.data, function( item ) {
+							return {
+								label: item.name,
+								value: item.name
+							}
+						}));
+					}
+				});
+			},
+			minLength: 2,
+			select: function( event, ui ) {
+				log( ui.item ?
+					"Selected: " + ui.item.label :
+					"Nothing selected, input was " + this.value);
+			},
+			open: function() {
+				$( this ).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
+			},
+			close: function() {
+				$( this ).removeClass( "ui-corner-top" ).addClass( "ui-corner-all" );
+			}
+		});
+	});
+	</script>
+
+
+
+
+
 <table id="pictureShareOverlay" style="overflow-x: scroll; height: 120px;" cellspacing="0" cellpadding="0">
 	<tr>
 <?php 
@@ -48,6 +109,15 @@ $pictures = $pictureDAO->getAllPicturesForDay($dayToDisplay);
 	</select>
 	</fieldset>
 	
+	<div class="ui-widget">
+	<label for="city">Your city: </label>
+	<input id="city" />
+	</div>
+	
+	<div class="ui-widget" style="margin-top:2em; font-family:Arial">
+		Result:
+		<div id="log" style="height: 200px; width: 300px; overflow: auto;" class="ui-widget-content"></div>
+	</div>
 	
 </div>
 
