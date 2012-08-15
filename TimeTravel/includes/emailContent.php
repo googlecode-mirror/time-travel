@@ -3,11 +3,35 @@
 require_once(dirname(dirname(__FILE__)) . '/dao/UserDAO.php');
 require_once(dirname(dirname(__FILE__)) . '/dao/DayDAO.php');
 require_once(dirname(dirname(__FILE__)) .'/conf.php');
+require_once(dirname(dirname(__FILE__)) . '/dao/GmailDAO.php');
 date_default_timezone_set('Africa/Johannesburg');
 
 
 error_reporting(E_ERROR | E_PARSE);
 session_start();
+
+$userid = $_SESSION['userid'];
+$chosenDate = $_SESSION['chosenDate'];
+$diplayDate = $_SESSION['diplayDate'];
+
+$dayDAO = new DayDAO();
+
+if (isset($_GET["dateText"])){
+	$theDate = $_GET["dateText"];
+	$dayToDisplay = $dayDAO->getIdForDay($userid, $theDate);
+} else {
+	$dayToDisplay = $dayDAO->getRandomDayForStatusUpdate($userid);
+}
+
+$unformattedDate = $dayDAO->getDateForDayId($userid, $dayToDisplay);
+
+$chosenDate = date("Y-m-d", strtotime($unformattedDate));
+$diplayDate = date("Y F j l", strtotime($chosenDate));
+
+$_SESSION['chosenDate'] = $chosenDate;
+$_SESSION['diplayDate'] = $diplayDate;
+
+error_log($userid." : status update : ". $chosenDate);
 
 ?>
 <script type="text/javascript">
@@ -40,7 +64,7 @@ session_start();
 	}
 
 	function displayEmailFolders(data){
-		$(".folder").remove();
+		$("#gmailFolderList").filter(".folder").remove();
 		$(data).find("list").children().each(function(){
 			$('<tr class="folder"><td class="ui-widget-content"><input type="checkbox"/></td><td class="formlabel ui-widget-content">'+ $(this).html() +'</td></tr>').insertAfter($("#gmailFolderList-head"));
 		})
@@ -82,6 +106,7 @@ session_start();
 		parms["action"] = "saveProviderFolders";
 		parms["type"] = 'email_gmail';
 		parms["folders"] = folderList;
+		parms["syncStart"] = $("#syncStartYear").val()+"-"+$("#syncStartMonth").val()+"-01";
 
 		$.post(url, parms, function(resultData) {
 			resultData = parseResult(resultData);
@@ -97,6 +122,16 @@ session_start();
 </script>
 
 <br/><br/>
+
+<?php 
+			$gmailDAO = new GmailDAO();
+			$userSubscribedForSms = $gmailDAO->hasUserSetupContentUpdate($userid, 'email');
+			error_log("SUB: ".$userSubscribedForSms);
+			if (!$userSubscribedForSms){
+				
+				
+	?>
+
 <div>
 	<img src="/images/gmail.png" width="80"></img>
 </div>
@@ -124,5 +159,22 @@ session_start();
 			<td></td>
 			<td><button onclick="saveGmailDetails();">Hook me up</button></td>
 		</tr>
-	</table>
+		</table>
+	</div>
+	<div>
+<?php }	 else { 
+	
+	$smsList = $gmailDAO->getCommunicationContentForDay($dayToDisplay, "sms");
+	$smsList = array_reverse($smsList);
+	foreach ($smsList as $sms){
+ ?>
+ 	<div style="position: relative; left: 0px; float: left;"><?php echo $sms->from?></div>
+ 	<div style="position: relative; left: 0px; float: right;"><?php echo date("H:m:s", strtotime($sms->timestamp))?></div>
+ 	<hr width="100%" size="1">
+ 	<p class="formlabel" style="text-align: left; background-color: #FAF5F5;"><?php echo $sms->body?></p>
+ 
+ <?php }
+ 
+}?>
+ 	</div>
 </div>

@@ -84,6 +84,7 @@ $(document).ready(function()	{
 
 
 		$("#smsAccordion").accordion({ autoHeight: true, clearStyle: true });
+		$("#emailAccordion").accordion({ autoHeight: true, clearStyle: true });
 });
 
 function doChangePictureDate(){
@@ -368,6 +369,27 @@ function showPictureShareOverlay(){
 
 	$("#genericOverlay").dialog("open");
 }
+
+function showEmail(id){
+	$("#genericOverlay").load("includes/loadEmail.php?emailid="+id);
+	$("#genericOverlay").dialog( {
+		bgiframe : true,
+		autoOpen : false,
+		width : 800,
+		height : 600,
+		position: ['center'],
+		modal : true,
+		resizable : false,
+		title : "Share pictures",
+		buttons : {
+			Close : function() {
+				$(this).dialog("destroy");
+			}
+		}
+	});
+
+	$("#genericOverlay").dialog("open");
+}
 </script>
 	
 	<?php
@@ -558,16 +580,20 @@ function showPictureShareOverlay(){
 		<br/>
 		<?php }?>
 	
-		
-		<div id="smsAccordion">
-	
+
+<?php 
+	$gmailDAO = new GmailDAO();
+	$userSubscribedForSms = $gmailDAO->hasUserSetupContentUpdate($userid, 'sms');
+		if ($userSubscribedForSms){
+			$smsList = $gmailDAO->getCommunicationContentForDay($dayToDisplay, "sms");
+			$smsList = array_reverse($smsList);
+			$showsms= sizeof($smsList) > 0 ? true : false;
+?>		
 		<!-- SMS's -->
+		<div class="ui-widget-header" style="padding: 2px; display: <?php echo $showsms ? "block" : "none"?>">SMS's:</div>
+		<div id="smsAccordion">
 		<?php 
-			$gmailDAO = new GmailDAO();
-			$userSubscribedForSms = $gmailDAO->hasUserSetupContentUpdate($userid, 'sms');
-			if ($userSubscribedForSms){
-				$smsList = $gmailDAO->getCommunicationContentForDay($dayToDisplay, "sms");
-				$smsList = array_reverse($smsList);
+			
 				foreach ($smsList as $sms){
 					//if the body is longer than 160 chars, it's not an sms, probably an mms. so we skip
 					if (strlen($sms->body) > 160) continue; 
@@ -592,7 +618,44 @@ function showPictureShareOverlay(){
 		</div>
 		
 		
-</div>
+		
+<?php  
+	$gmailDAO = new GmailDAO();
+	$userSubscribedForEmails = $gmailDAO->hasUserSetupContentUpdate($userid, 'email');
+	if ($userSubscribedForEmails){
+		$emailList = $gmailDAO->getCommunicationContentForDay($dayToDisplay, "email");
+		$smsList = array_reverse($emailList);
+		$showEmails = sizeof($emailList) > 0 ? true : false;
+?>
+		<br/><br/>
+		<div class="ui-widget-header" style="padding: 2px; display: <?php echo $showEmails ? "block" : "none"?>">Emails:</div>
+		<!-- *****  EMAILS -->
+		<div id="emailAccordion">
+	
+		<?php 
+				foreach ($emailList as $email){
+
+					$source = Util::getSourceName($email->from);
+				
+	?>
+		<h3><span style="float: left; left: 25px; position: relative;"><?php echo $source?></span>
+		
+		
+			<span align="right"><?php echo date("H:m:s", strtotime($email->timestamp))?></span>
+		</h3>
+		<div>
+	 		<a href="#" onclick="showEmail('<?php echo $email->id?>');"><p class="formlabel" style="text-align: left; background-color: #FAF5F5;"><b>Subject:</b> &nbsp;&nbsp; <?php echo trim($email->title)?></p></a>
+	 	</div>
+	<?php 
+				}
+			}
+		?>
+		
+		</div>
+		
+		
+		
+		
 <div id="picOverlay" style="display: none;">
 	<div id="pictureDiv" align="center">
 	</div>

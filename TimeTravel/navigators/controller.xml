@@ -25,6 +25,7 @@
 		<expected-params>
 			<param required="true">type</param>
 			<param required="true">folders</param>
+			<param required="true">syncStart</param>
 		</expected-params>
 	</action>
 	<action>

@@ -57,15 +57,16 @@ class GmailDAO {
 	}
 
 
-	public function saveGmailSyncDetails($userid, $folderlist, $type){
+	public function saveGmailSyncDetails($userid, $folderlist, $type, $syncStart){
 		error_log("in saveGmailSyncDetails..");
 		try {
 
 			self::$con->beginTransaction();
 
-			$stmt1 = self::$con->prepare("insert into contentupdate (type, lastupdate, active, userid) values (:type, '2011-02-01', true, :userid)");
+			$stmt1 = self::$con->prepare("insert into contentupdate (type, lastupdate, active, userid) values (:type, :lastupdate, true, :userid)");
 			$stmt1->bindParam(':userid', $userid);
 			$stmt1->bindParam(':type', $type);
+			$stmt1->bindParam(':lastupdate', $syncStart);
 			$stmt1->execute();
 			$contentUpdateId = self::$con->lastInsertId();
 
@@ -84,10 +85,11 @@ class GmailDAO {
 		}
 	}
 
-	public function getSMSfolders($userid){
+	public function getfoldersToUpdate($userid, $type){
 		try {
-			$stmt = self::$con->prepare("select d.contentkey as folder, c.lastupdate from contentupdatedetails d, contentupdate c where c.id=d.contentupdateid and c.userid=:userid and c.type='sms_gmail'");
+			$stmt = self::$con->prepare("select d.contentkey as folder, c.lastupdate from contentupdatedetails d, contentupdate c where c.id=d.contentupdateid and c.userid=:userid and c.type=:type");
 			$stmt->bindParam(':userid', $userid);
+			$stmt->bindParam(':type', $type);
 			$itemlist = array();
 			if ($stmt->execute()){
 				while ($row = $stmt->fetch()){
@@ -123,19 +125,20 @@ class GmailDAO {
 	}
 
 	public function updateLastUpdate($userid, $type, $lastupdate){
+		Logger::log("in updateLastUpdate :".$lastupdate." type: ".$type);
 		try {
 			$stmt = self::$con->prepare("update contentupdate set lastupdate=:lastupdate where userid=:userid and type=:type");
 			$stmt->bindParam(':lastupdate', $lastupdate);
 			$stmt->bindParam(':userid', $userid);
 			$stmt->bindParam(':type', $type);
-	
+
 			$stmt->execute();
 		} catch (Exception $e) {
 			error_log("Error: ".$e->getMessage());
 			throw new Exception('040');
 		}
 	}
-	
+
 	public function hasUserSetupContentUpdate($userid, $type){
 		$result = false;
 		try {
@@ -155,7 +158,7 @@ class GmailDAO {
 		}
 		return $result;
 	}
-	
+
 	public function getCommunicationContentForDay($dayid, $type){
 		try {
 			$stmt = self::$con->prepare("select * from communicationcontent where dayid=:dayid and communicationtype=:type order by theTimestamp desc");
@@ -176,7 +179,7 @@ class GmailDAO {
 		}
 		return $itemlist;
 	}
-	
+
 	public function getRandomCommunicationContentForDay($dayid, $type){
 		try {
 			$stmt = self::$con->prepare("select * from communicationcontent where dayid=:dayid and communicationtype=:type order by rand() limit 1");
@@ -196,8 +199,8 @@ class GmailDAO {
 		}
 		return $communication;
 	}
-	
-	
+
+
 	public function getGmailAccessDetailsForUser($userid){
 		try {
 			$stmt = self::$con->prepare("select e.key, e.value from accessdetails a,accessdetailsentries e where a.id=e.accessdetailsid and a.userid=11;");
@@ -216,7 +219,27 @@ class GmailDAO {
 			throw new Exception('040');
 		}
 		return $itemlist;
-		
+
+	}
+
+
+	public function getCommunicationById($commId){
+		try {
+			$stmt = self::$con->prepare("select * from communicationcontent where id=:id");
+			$stmt->bindParam(':id', $commId);
+			$communication = null;
+			if ($stmt->execute()){
+				while ($row = $stmt->fetch()){
+					$communication = new Communication($row["id"], $row["title"], $row["body"], $row["theTimestamp"], $row["source"], $row["recipient"]);
+				}
+			} else {
+				throw new Exception('040');
+			}
+		} catch (Exception $e) {
+			error_log("Error: ".$e->getMessage());
+			throw new Exception('040');
+		}
+		return $communication;
 	}
 }
 ?>

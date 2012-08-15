@@ -3,7 +3,7 @@ date_default_timezone_set('Europe/Minsk');
 
 class Util{
 
-	function ShortenString($text, $size) {
+	public static function ShortenString($text, $size) {
 		// Change to the number of characters you want to display
 		if (strlen($text) > $size){
 			$text = substr($text,0, $size);

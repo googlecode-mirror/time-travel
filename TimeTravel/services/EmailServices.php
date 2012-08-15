@@ -2,6 +2,9 @@
 require_once(dirname(dirname(__FILE__)) . '/dao/GmailDAO.php');
 require_once(dirname(dirname(__FILE__)) . '/dao/PictureDAO.php');
 require_once(dirname(dirname(__FILE__)) . '/services/securityServices.php');
+require_once(dirname(dirname(__FILE__)) .'/EmailUtil.php');
+require_once(dirname(dirname(__FILE__)) .'/util.php');
+
 date_default_timezone_set('Africa/Johannesburg');
 class EmailServices {
 
@@ -19,7 +22,6 @@ class EmailServices {
 		self::$pictureDAO = new PictureDAO();
 	}
 
-
 	public function saveProviderFolders($parameters){
 		$folders = split(",", $parameters["folders"]);
 		$folderlist = array();
@@ -28,7 +30,7 @@ class EmailServices {
 				array_push($folderlist, $folder);
 			}
 		}
-		self::$gmailDAO->saveGmailSyncDetails($_SESSION["userid"], $folderlist, $parameters["type"]);
+		self::$gmailDAO->saveGmailSyncDetails($_SESSION["userid"], $folderlist, $parameters["type"], $parameters["syncStart"]);
 		self::$responder->constructResponse(null);
 	}
 
@@ -54,8 +56,10 @@ class EmailServices {
 			return self::$responder->constructErrorResponse("I could not connect to Gmail. Make sure your login details are correct.");
 		}
 
-
-		self::$gmailDAO->saveGmailDetails($userid, $username, $password);
+		try {
+			self::$gmailDAO->saveGmailDetails($userid, $username, $password);
+		} catch (Exception $e){
+		}
 
 		$folderList = array();
 		$emailFolderList = imap_getmailboxes($inbox, self::INBOX, "*");
@@ -87,21 +91,33 @@ class EmailServices {
 			$username = $parameters["username"];
 			$userid = self::$securityServices->getUserByUsername($username)->id;
 
+			//We get the sms's first
 			Logger::log("userid: ".$userid);
-			$foldersToUpdate = self::$gmailDAO->getSMSfolders($userid);
+			$foldersToUpdate = self::$gmailDAO->getfoldersToUpdate($userid, 'sms_gmail');
 			error_log("foldersToUpdate: ". sizeof($foldersToUpdate));
 
 			foreach ($foldersToUpdate as $folderName => $lastupdate){
 				Logger::log("folder: ".$folderName);
-				$this->fetchFolderContent($userid, $folderName, $lastupdate);
+				$this->fetchFolderContent($userid, $folderName, $lastupdate, 'sms_gmail');
 			}
+
+			//We get the emails
+			Logger::log("userid: ".$userid);
+			$foldersToUpdate = self::$gmailDAO->getfoldersToUpdate($userid, 'email_gmail');
+			error_log("foldersToUpdate: ". sizeof($foldersToUpdate));
+
+			foreach ($foldersToUpdate as $folderName => $lastupdate){
+				Logger::log("folder: ".$folderName);
+				$this->fetchFolderContent($userid, $folderName, $lastupdate, 'email_gmail');
+			}
+
 		} catch (Exception $e){
 			Logger::log("ERROR -- updateGmailContent ".$e->getMessage());
 		}
 		Logger::log("EmailService -- Done updating GMAIL!");
 	}
 
-	public function fetchFolderContent($userid, $folderName, $lastupdate){
+	public function fetchFolderContent($userid, $folderName, $lastupdate, $type){
 		Logger::log("fetching folder: ".$folderName);
 		$details = self::$gmailDAO->getGmailAccessDetailsForUser($userid);
 		$username = "";
@@ -114,51 +130,73 @@ class EmailServices {
 			}
 		}
 		$inbox = $this->getImapConnection($username, $password, $folderName);
-		
+
 		$tomorrow = date('d-M-Y', mktime(0,0,0,date("m", time()),date("d", time())+1,date("Y", time())));
-		$startDate = date('d-M-Y', mktime(0,0,0,date("m", time()),date("d", time())-1,date("Y", time())));
-		
+		$startDate = date('d-M-Y', mktime(0,0,0,date("m", strtotime($lastupdate)),date("d", strtotime($lastupdate))-1,date("Y", strtotime($lastupdate))));
+
 		while ($startDate != $tomorrow){
-			set_time_limit(0);
-			Logger::log("fetching Gmail content for date: ".$startDate);
-			$emails = imap_search($inbox,'ON '.$startDate);
-			if($emails) {
+			try {
+				set_time_limit(1800);
+				Logger::log("fetching Gmail content for date: ".$startDate);
+				$emails = imap_search($inbox,'ON '.$startDate);
+				if($emails) {
 
-				$output = '';
+					$output = '';
 
-				rsort($emails);
-				foreach($emails as $email_number) {
-					set_time_limit(0);
-					$overview = imap_fetch_overview($inbox,$email_number,0);
-					$message = quoted_printable_decode(imap_fetchbody($inbox,$email_number,1));
+					rsort($emails);
+					foreach($emails as $email_number) {
+						set_time_limit(0);
+						$overview = imap_fetch_overview($inbox,$email_number,0);
+							
+						if ($type == 'sms_gmail'){
+							$message = quoted_printable_decode(imap_fetchbody($inbox,$email_number,1));
+						} else {
+							$dataTxt = EmailUtil::get_part($inbox, $email_number, "TEXT/PLAIN");
+
+							// GET HTML BODY
+							$dataHtml = EmailUtil::get_part($inbox, $email_number, "TEXT/HTML");
+
+							if ($dataHtml != "") {
+								$message = $dataHtml;
+								$mailformat = "html";
+							} else {
+								$message = ereg_replace("\n","<br>",$dataTxt);
+								$mailformat = "text";
+							}
+
+						}
 
 
-					$messageDate = $overview[0]->date;
-					$gmtTimezone = new DateTimeZone('Africa/Johannesburg');
-					$myDateTime = new DateTime($messageDate, $gmtTimezone);
+						$messageDate = $overview[0]->date;
+						$gmtTimezone = new DateTimeZone('Africa/Johannesburg');
+						$myDateTime = new DateTime($messageDate, $gmtTimezone);
 
-					$theDate = date('c', $myDateTime->format('U') + 1);
-					$theDate = date('Y-m-d H:i:s', strtotime($theDate));
-					$recipient = quoted_printable_decode($overview[0]->to);
+						$theDate = date('c', $myDateTime->format('U') + 1);
+						$theDate = date('Y-m-d H:i:s', strtotime($theDate));
+						$recipient = quoted_printable_decode($overview[0]->to);
 
 
-					$subject = quoted_printable_decode($overview[0]->subject);
-					$from = quoted_printable_decode($overview[0]->from);
+						$subject = Util::ShortenString(quoted_printable_decode($overview[0]->subject), 250);
+						$from = quoted_printable_decode($overview[0]->from);
 
-					$dayid = self::$pictureDAO->createDay($userid, $theDate);
+						$dayid = self::$pictureDAO->createDay($userid, $theDate);
 
-					Logger::log($messageDate." --- ".$message);
-					Logger::log($message);
-					try {
-						self::$gmailDAO->saveCommunication($subject, $message, $theDate, $dayid, $from, 'sms', $recipient);
-					} catch (Exception $e){
+						//Logger::log($messageDate." --- ".$message);
+						//Logger::log($message);
+						try {
+							self::$gmailDAO->saveCommunication($subject, $message, $theDate, $dayid, $from, $type, $recipient);
+						} catch (Exception $e){
+						}
 					}
+
 				}
 
+			} catch (Exception $e){
+				Logger::log($e->getMessage());
 			}
-			
-			self::$gmailDAO->updateLastUpdate($userid, 'sms_gmail', date("Y-m-d", strtotime($startDate)));
-			
+
+			self::$gmailDAO->updateLastUpdate($userid, $type, date("Y-m-d", strtotime($startDate)));
+
 			$tempDate = mktime(0,0,0,date("m", strtotime($startDate)),date("d", strtotime($startDate))+1,date("Y", strtotime($startDate)));
 			$startDate = date("d-M-Y", $tempDate);
 		}
