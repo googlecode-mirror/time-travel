@@ -98,7 +98,7 @@ class EmailServices {
 
 			foreach ($foldersToUpdate as $folderName => $lastupdate){
 				Logger::log("folder: ".$folderName);
-				$this->fetchFolderContent($userid, $folderName, $lastupdate, 'sms_gmail');
+				$this->fetchFolderContent($userid, $folderName, $lastupdate, 'sms');
 			}
 
 			//We get the emails
@@ -108,7 +108,7 @@ class EmailServices {
 
 			foreach ($foldersToUpdate as $folderName => $lastupdate){
 				Logger::log("folder: ".$folderName);
-				$this->fetchFolderContent($userid, $folderName, $lastupdate, 'email_gmail');
+				$this->fetchFolderContent($userid, $folderName, $lastupdate, 'email');
 			}
 
 		} catch (Exception $e){
@@ -142,13 +142,14 @@ class EmailServices {
 				if($emails) {
 
 					$output = '';
-
+					
+					Logger::log("Found (".sizeof($emails) .") communications [".$type."]");
 					rsort($emails);
 					foreach($emails as $email_number) {
 						set_time_limit(0);
 						$overview = imap_fetch_overview($inbox,$email_number,0);
 							
-						if ($type == 'sms_gmail'){
+						if ($type == 'sms'){
 							$message = quoted_printable_decode(imap_fetchbody($inbox,$email_number,1));
 						} else {
 							$dataTxt = EmailUtil::get_part($inbox, $email_number, "TEXT/PLAIN");
@@ -195,7 +196,7 @@ class EmailServices {
 				Logger::log($e->getMessage());
 			}
 
-			self::$gmailDAO->updateLastUpdate($userid, $type, date("Y-m-d", strtotime($startDate)));
+			self::$gmailDAO->updateLastUpdate($userid, ($type."_gmail"), date("Y-m-d", strtotime($startDate)));
 
 			$tempDate = mktime(0,0,0,date("m", strtotime($startDate)),date("d", strtotime($startDate))+1,date("Y", strtotime($startDate)));
 			$startDate = date("d-M-Y", $tempDate);

@@ -431,6 +431,8 @@ function showEmail(id){
 			
 			$_SESSION['chosenDate'] = $chosenDate;
 			$_SESSION['diplayDate'] = $diplayDate;
+			
+			//used when we share content for a day
 			$_SESSION['dayToDisplay'] = $dayToDisplay;
 			
 			$pictureDAO = new PictureDAO();
@@ -469,13 +471,18 @@ function showEmail(id){
 				<?php
 				foreach($pictures as $picture){
 					$picturesFound = true;
-					$pictureIsShared = isset($picture->sharerUsername) ? true : false;
-					$username = $pictureIsShared ? $picture->sharerUsername : $username;
+					if ( $picture->sharerUsername == ""){
+						$pictureIsShared = false;
+						$pictureFolder = $username;
+					} else{
+						$pictureIsShared = true;
+						$pictureFolder = $picture->sharerUsername;
+					}
 					
-					$pictureSrc =  '/pictures/'. $username.'/optimized/'.$picture->filename;
-					$mainPicUrl =  '/pictures/'.$username.'/main/'.$picture->filename;
+					$pictureSrc =  '/pictures/'. $pictureFolder.'/optimized/'.$picture->filename;
+					$mainPicUrl =  '/pictures/'.$pictureFolder.'/main/'.$picture->filename;
 					$pictureDescription = ($picture->description == "" ? "" : "\""). $picture->description . ($picture->description == "" ? "" : "\"");
-					$pictureDescription = $pictureIsShared ? ("Shared to you by '".($securityService->getUserByUsername($picture->sharerUsername)->name))."'" : $pictureDescription;
+					//$pictureDescription = $pictureIsShared ? ("Shared to you by '".($securityService->getUserByUsername($picture->sharerUsername)->name))."'" : $pictureDescription;
 				?>
 				<!-- Each child div in #showcase represents a slide -->
 				<div class="showcase-slide">
@@ -509,7 +516,7 @@ function showEmail(id){
 				
 		 
 		<!-- <div class="formlabel" style="display: <?php echo$picturesFound? "none" : "block"; ?>;">No Pictures taken on this day.</div>  -->
-		
+		<div class="ui-state-default" style="height: 30px; display: <?php echo $pictureIsShared ? "block" : "none"?>; ?>;"><span style="top: 5px; position: relative;"><?php echo ("Shared to you by '".($securityService->getUserByUsername($picture->sharerUsername)->name))."'" ?></span></div>
 		<div class="ui-datepicker-inline ui-widget ui-widget-content ui-helper-clearfix" style="padding-top: 5px; position: relative; left: 0px; width:450px; display: <?php echo $pictureIsShared ? "none" : "block"?>; ?>;">
 			<a href="#" onclick="callPictureRotate('left');" title="Rotate picture left"><img src="/images/rotate-left.png"width="22"/></a>&nbsp;&nbsp;
 			<a href="#" onclick="callPictureRotate('right');" title="Rotate picture right"><img src="/images/rotate-right.png"width="22"/></a>&nbsp;&nbsp;

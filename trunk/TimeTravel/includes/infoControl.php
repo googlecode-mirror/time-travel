@@ -84,11 +84,11 @@
 <div class="ui-widget-header" style="padding: 2px;">Randomize by:</div>
 <div >
 
-	<button class="randBtn" style="padding-right: 0em;" title="Randomize by pictures" value="picture"><img src="/images/picture.png"/></button>
-	<button class="randBtn" style="padding-right: 0em;" title="Randomize by status updates" value="s-update"><img src="/images/update.png"/></button>
-	<button class="randBtn" style="padding-right: 0em;" title="Randomize by emails" value="email"><img src="/images/email_attach.png"/></button>
-	<button class="randBtn" style="padding-right: 0em;" title="Randomize by sms's" value="sms"><img src="/images/email.png"/></button>
-	<button class="randBtn" style="padding-right: 0em;" title="Randomize by phone calls" value="phone"><img src="/images/phone.png"/></button>
+	<button class="randBtn" style="padding-right: 0em;" title="Always show me pictures when randomizing" value="picture"><img src="/images/picture.png"/></button>
+	<button class="randBtn" style="padding-right: 0em;" title="Always show me status updates when randomizing" value="s-update"><img src="/images/update.png"/></button>
+	<button class="randBtn" style="padding-right: 0em;" title="Always show me emails when randomizing" value="email"><img src="/images/email_attach.png"/></button>
+	<button class="randBtn" style="padding-right: 0em;" title="Always show me sms's when randomizing" value="sms"><img src="/images/email.png"/></button>
+	<button class="randBtn" style="padding-right: 0em;" title="Always show me phone calls when randomizing" value="phone"><img src="/images/phone.png"/></button>
 
 </div>
 </fieldset>

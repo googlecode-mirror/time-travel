@@ -9,7 +9,8 @@ class DayDAO {
 	 */
 	public function deleteDayIfUnused($dayId){
 		error_log("tryin to deleteDay..".$dayId);
-		if ((!$this->isDayUsed($dayId, "picture") && (!$this->isDayUsed($dayId, "status_update") && (!$this->isDayUsed($dayId, "location")) && (!$this->isDayUsed($dayId, "communicationcontent"))))){
+		if ((!$this->isDayUsed($dayId, "picture") && (!$this->isDayUsed($dayId, "status_update") && (!$this->isDayUsed($dayId, "location")) && (!$this->isDayUsed($dayId, "communicationcontent"))
+				&& (!$this->isDayUsed($dayId, "sharedcontent"))))){
 			$this->deleteDay($dayId);
 		}
 
@@ -61,7 +62,7 @@ class DayDAO {
 		
 		$query = " ";
 		if (strpos($options, "picture") > 0){
-			$query .= " and id in (select dayid from picture)";
+			$query .= " and id in (select dayid from picture) or id in (select dayid from sharedcontent where contenttype=1)";
 		}
 		
 		if (strpos($options, "sms") > 0){
@@ -130,15 +131,15 @@ class DayDAO {
 		try {
 			$con = new PDO(GlobalConfig::db_pdo_connect_string, GlobalConfig::db_username, GlobalConfig::db_password);
 			$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-			$stmt = $con->prepare("SELECT * FROM user_day WHERE userid = :userid and id=:dayid");
-			$stmt->bindParam(':userid', $userid);
+			$stmt = $con->prepare("SELECT * FROM user_day WHERE id=:dayid");
+			//$stmt->bindParam(':userid', $userid);
 			$stmt->bindParam(':dayid', $dayid);
 
 			$result = 0;
 			if ($stmt->execute()){
 				while ($row = $stmt->fetch()){
+					error_log("datew: ".$row["theDate"]);
 					$result = $row["theDate"];
-					break;
 				}
 			}
 
