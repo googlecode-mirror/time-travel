@@ -33,5 +33,5 @@ ALTER TABLE `journal`.`sharedcontent` ADD UNIQUE INDEX `sharedcontent_Index_Uniq
 
 ALTER TABLE `journal`.`status_update` ADD INDEX `Index_status_update_i0`(`dayid`);
 
-
+ALTER TABLE `journal`.`sharedcontent` ADD COLUMN `dayid` INTEGER UNSIGNED NOT NULL AFTER `sharedforid`;
 commit;

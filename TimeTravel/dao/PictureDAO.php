@@ -3,6 +3,7 @@ require_once(dirname(dirname(__FILE__)) .'/conf.php');
 require_once(dirname(dirname(__FILE__)) .'/viewbean/Picture.php');
 require_once(dirname(dirname(__FILE__)) .'/Logger.php');
 require_once(dirname(dirname(__FILE__)) . '/dao/UserDAO.php');
+require_once(dirname(dirname(__FILE__)) . '/dao/DayDAO.php');
 require_once(dirname(dirname(__FILE__)) . '/services/securityServices.php');
 
 class PictureDAO {
@@ -10,9 +11,11 @@ class PictureDAO {
 	private static $contentTypeId;
 	private static $userDAO;
 	private static $securityService;
+	private static $dayDAO;
 
 	function __construct() {
 		self::$userDAO = new UserDAO();
+		self::$dayDAO = new DayDAO();
 		self::$contentTypeId = self::$userDAO->getIdForSharedContentType('picture');
 		self::$securityService = new SecurityService();
 	}
@@ -24,14 +27,19 @@ class PictureDAO {
 			if (($pictureId == null) || ($pictureId == "")){
 				throw new Exception('004');
 			}
+			
+			$picture = $this->getPictureById($pictureId);
+			$dayId = $this->createDay($shareToId, $picture->timetaken);
+			error_log("SHARE: ".$sharerId." - ".$shareToId." - ".$pictureId);
 		
 			$con = new PDO(GlobalConfig::db_pdo_connect_string, GlobalConfig::db_username, GlobalConfig::db_password);
 			$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-			$stmt = $con->prepare("insert into sharedcontent values (:pictureId, :contenttypeid, :sharerid, :sharedtoid)");
+			$stmt = $con->prepare("insert into sharedcontent values (:pictureId, :contenttypeid, :sharerid, :sharedtoid, :dayid)");
 			$stmt->bindParam(':pictureId', $pictureId);
 			$stmt->bindParam(':contenttypeid', self::$contentTypeId);
 			$stmt->bindParam(':sharerid', $sharerId);
 			$stmt->bindParam(':sharedtoid', $shareToId);
+			$stmt->bindParam(':dayid', $dayId);
 		
 			$stmt->execute();
 		

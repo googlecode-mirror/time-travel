@@ -107,6 +107,7 @@ class GmailDAO {
 	}
 
 	public function saveCommunication($title, $body, $timestamp, $dayid, $from, $type, $recipient){
+		Logger::log("in saveCommunication...");
 		try {
 			$stmt = self::$con->prepare("insert into communicationcontent (title, body, theTimestamp, dayid, source, communicationtype, recipient) values (:title, :body, :theTimestamp, :dayid, :from, :type, :recipient)");
 			$stmt->bindParam(':title', $title);
@@ -119,7 +120,7 @@ class GmailDAO {
 
 			$stmt->execute();
 		} catch (Exception $e) {
-			error_log("Error: ".$e->getMessage());
+			Logger::log("Error: ".$e->getMessage());
 			throw new Exception('040');
 		}
 	}
