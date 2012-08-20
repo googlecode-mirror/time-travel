@@ -85,6 +85,7 @@ $(document).ready(function()	{
 
 		$("#smsAccordion").accordion({ autoHeight: true, clearStyle: true });
 		$("#emailAccordion").accordion({ autoHeight: true, clearStyle: true });
+		$("#callAccordion").accordion({ autoHeight: true, clearStyle: true });
 });
 
 function doChangePictureDate(){
@@ -660,6 +661,41 @@ function showEmail(id){
 		
 		</div>
 		
+
+		
+		<!--  CALLS -->
+<?php 
+	$gmailDAO = new GmailDAO();
+	$userSubscribedForSms = $gmailDAO->hasUserSetupContentUpdate($userid, 'call');
+		if ($userSubscribedForSms){
+			$smsList = $gmailDAO->getCommunicationContentForDay($dayToDisplay, "call");
+			$smsList = array_reverse($smsList);
+			$showsms= sizeof($smsList) > 0 ? true : false;
+?>		
+		<!-- SMS's -->
+		<br/><br/>
+		<div class="ui-widget-header" style="padding: 2px; display: <?php echo $showsms ? "block" : "none"?>">Calls</div>
+		<div id="callAccordion">
+		<?php 
+			
+				foreach ($smsList as $sms){
+				
+	?>
+		<h3><span style="float: left; left: 25px; position: relative;"><?php echo $sms->title?></span>
+		
+		
+			<span align="right"><?php echo date("H:m:s", strtotime($sms->timestamp))?></span>
+		</h3>
+		<div>
+	 		<p class="formlabel" style="text-align: left; background-color: #FAF5F5;"><?php echo trim($sms->body)?></p>
+		</div>
+	
+	<?php 
+				}
+			}
+		?>
+		
+		</div>
 		
 		
 		

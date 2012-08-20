@@ -110,6 +110,17 @@ class EmailServices {
 				Logger::log("folder: ".$folderName);
 				$this->fetchFolderContent($userid, $folderName, $lastupdate, 'email');
 			}
+			
+			
+			//We get the calls
+			Logger::log("userid: ".$userid);
+			$foldersToUpdate = self::$gmailDAO->getfoldersToUpdate($userid, 'call_gmail');
+			error_log("foldersToUpdate: ". sizeof($foldersToUpdate));
+			
+			foreach ($foldersToUpdate as $folderName => $lastupdate){
+				Logger::log("folder: ".$folderName);
+				$this->fetchFolderContent($userid, $folderName, $lastupdate, 'call');
+			}
 
 		} catch (Exception $e){
 			Logger::log("ERROR -- updateGmailContent ".$e->getMessage());
