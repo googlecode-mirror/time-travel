@@ -87,9 +87,9 @@ A:hover {text-decoration: underline;}
 				<div style="font-size: 0.9em; color: #999; font-weight: bold; margin-top: 12px; padding-right: 15px;"><a href="index.php?response=calls" >PHONE CALLS</a></div>
 				<div style="font-size: 0.9em; color: #999; font-weight: bold; margin-top: 12px; padding-right: 15px;"><a href="index.php?response=calls" >GEO LOCATION</a></div>
 			</div>
-			<div style="float: left; border-left:1px solid #E0E0E0; height: 600px; padding-left: 10px; width: 56%;">
+			<div style="float: left; border-left:1px solid #E0E0E0; height: 650px; padding-left: 10px; width: 56%;">
 				<br/>
-				<div id="contentArea1" style="height: 600px; overflow: hidden; overflow-y: scroll; padding-right: 10px;"></div>
+				<div id="contentArea1" style="height: 700px; overflow: hidden; overflow-y: scroll; padding-right: 10px;"></div>
 			</div>
 
 			<div style="float: right; right: 0px; border-left:1px solid #E0E0E0; width: 28%;">
