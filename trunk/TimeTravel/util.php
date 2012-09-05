@@ -63,6 +63,11 @@ class Util{
 			}
 		} */
 	}
+	
+	public static function getFolderList($rest){
+		$statuses = json_decode($response);
+		$statusesArray = $statuses->{'dropbox'};
+	}
 }
 
 ?>
