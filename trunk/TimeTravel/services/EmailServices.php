@@ -143,6 +143,7 @@ class EmailServices {
 		$inbox = $this->getImapConnection($username, $password, $folderName);
 
 		$tomorrow = date('d-M-Y', mktime(0,0,0,date("m", time()),date("d", time())+1,date("Y", time())));
+		Logger::log("Tomorrow: ".$tomorrow);
 		$startDate = date('d-M-Y', mktime(0,0,0,date("m", strtotime($lastupdate)),date("d", strtotime($lastupdate))-1,date("Y", strtotime($lastupdate))));
 
 		while ($startDate != $tomorrow){
