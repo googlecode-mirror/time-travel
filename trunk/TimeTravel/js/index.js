@@ -28,10 +28,26 @@ $(document).ready(function() {
 		loadEmailContent(); 
 	} else if (params.mainContentType == "sms"){
 		loadSMSContent(); 
-	} else {
+	} else if (params.mainContentType == "calls"){
+		loadCallContent(); 
+	} else if (params.mainContentType == "dropbox"){
+		loadDropbox(); 
+	}else {
 		loadPictures();
 	}
 });
+
+function loadDropbox(){
+	$("#contentArea1").load("includes/dropboxSetup.php", function(){
+		//updateDatePicker();
+	});
+}
+
+function loadCallContent(){
+	$("#contentArea1").load("includes/callContent.php", function(){
+		//updateDatePicker();
+	});
+}
 
 function loadSMSContent(){
 	$("#contentArea1").load("includes/smsContent.php", function(){

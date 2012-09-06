@@ -327,6 +327,30 @@ class PictureDAO {
 
 		return $result;
 	}
+	
+	public function isPictureForUserExisting($userid, $filename){
+		$result = false;
+		try {
+			$con = new PDO(GlobalConfig::db_pdo_connect_string, GlobalConfig::db_username, GlobalConfig::db_password);
+			$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			$stmt = $con->prepare("select p.id from picture p, user_day d where p.dayid=d.id and p.filename=:filename and d.userid=:userid");
+			$stmt->bindParam(':filename', $filename);
+			$stmt->bindParam(':userid', $userid);
+	
+			if ($stmt->execute()){
+				while ($row = $stmt->fetch()){
+					$result = true;
+					break;
+				}
+			}
+	
+		} catch (PDOException $e) {
+			error_log("Error: ".$e->getMessage());
+			throw new Exception('018');
+		}
+	
+		return $result;
+	}
 
 	public function isDayForUserExisting($userid, $date){
 		$date = date("Y-m-d", strtotime($date));
