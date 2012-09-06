@@ -15,6 +15,8 @@ $numOfFolders = sizeof($folderList);
 
 $service->readDirs('/Software', $dropbox);
 
+
+$dropbox->getFile($file)
 /* for ($i = 0; $i < $numOfFolders; $i++) {
 	$folder = $folderList[$i]->{'path'};
 	$service->readDirs($folder, $dropbox);
