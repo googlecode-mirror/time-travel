@@ -68,6 +68,12 @@ class Util{
 		$statuses = json_decode($response);
 		$statusesArray = $statuses->{'dropbox'};
 	}
+	
+	public static function getFileNameFromPath($string){
+		$array = explode("/", $string);
+		$arraySize = sizeof($array);
+		return $array[$arraySize-1];
+	}
 }
 
 ?>
