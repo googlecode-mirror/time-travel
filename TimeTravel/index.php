@@ -70,6 +70,7 @@ A:hover {text-decoration: underline;}
 	params.fbToken = "<?php echo$facebookAccessToken?>";
 	params.fbCode = "<?php echo$facebookCode?>";
 	params.username = "<?php echo $username?>";
+	var dirToSync;
  </script>
  
  <div id="loadingPic" style="display: none; position:absolute; left: 0px; top:0px; height:100%; width: 100%; text-align: center;
