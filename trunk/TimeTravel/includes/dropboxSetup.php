@@ -5,20 +5,36 @@ require_once(dirname(dirname(__FILE__)) .'/services/DropboxService.php');
 require_once(dirname(dirname(__FILE__)) .'/viewbean/DropboxFile.php');
 ?>
 <script type="text/javascript">
-var currentFile = '<?php echo isset($_GET['currentFile']) ? $_GET['currentFile'] : "none"?>';
+var lastFile = '<?php echo isset($_GET['lastFile']) ? $_GET['lastFile'] : ""?>';
+dirToSync = '<?php echo (isset($_GET['action']) && ($_GET['action']=="syncDir")) ? $_GET['dir'] : ""?>';
 
 $(document).ready(function(){
 	$("button").button();
 	
-	if (currentFile == "first"){
+	if (lastFile == "none"){
 		var fileToSync = $(".syncFile:first").val();
-		alert("filetosync: "+fileToSync);
 		$("#contentArea1").load("includes/fetchDropboxFile.php?filename="+fileToSync, function(){
-			$("#contentArea1").load("includes/dropboxSetup.php?action=syncDir&dir="+dirToSync+"&currentFile=next");
+			$("#contentArea1").load("includes/dropboxSetup.php?action=syncDir&dir="+dirToSync+"&lastFile="+fileToSync);
+		});
+	} else if (lastFile != "") {
+		 currentFile = $(".syncFile[value='"+ lastFile +"']");
+		 $(currentFile).attr('checked','checked');
+		 nextFile = $(currentFile).parent().next().find(".syncFile").val();
+		// checkAllPreviousFiles($(currentFile).val());
+		 $("#contentArea1").load("includes/fetchDropboxFile.php?filename="+nextFile, function(){
+				$("#contentArea1").load("includes/dropboxSetup.php?action=syncDir&dir="+dirToSync+"&lastFile="+nextFile);
 		});
 	}
 
 });
+
+function checkAllPreviousFiles(currentFile){
+	if (currentFile == $(".syncFile:first").val()) return;
+	while (currentFile != $(".syncFile:first").val()){
+		$(currentFile).attr('checked','checked');
+		currentFile = $(currentFile).parent().prev().find(".syncFile").val();
+	}
+}
 
 function loadRootDir(){
 	$("#contentArea1").load("includes/dropboxSetup.php?action=loadRootDir");
@@ -33,8 +49,8 @@ function enableSubmitBtn(){
 }
 
 function syncSelectedDir(){
-	var dirToSync = $("#folderList input:radio:checked").val();
-	$("#contentArea1").load("includes/dropboxSetup.php?action=syncDir&dir="+dirToSync+"&currentFile=first");
+	dirToSync = $("#folderList input:radio:checked").val();
+	$("#contentArea1").load("includes/dropboxSetup.php?action=syncDir&dir="+dirToSync+"&lastFile=none");
 }
 </script>
 

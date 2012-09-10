@@ -63,16 +63,32 @@ class DropboxService {
 	}
 	
 	
-	function fetchFile($dropbox, $filename, $username){
-		$saveTo = (dirname(dirname(__FILE__))) . '/pictures/'. $username .'/temp/' . Util::getFileNameFromPath($filename);
-		echo $filename;
+	function fetchFile($dropbox, $filename, $username, $userid){
+		$temp = (dirname(dirname(__FILE__))) . '/pictures/'. $username .'/temp/' . Util::getFileNameFromPath($filename);
+
 		$pic = $dropbox->getFile($filename);
 		
-		file_put_contents($saveTo, $pic['data']);
-		//$this->saveFileToDB($filepath);
+		file_put_contents($temp, $pic['data']);
+		$this->saveFileToDB($temp, $userid);
+		
+		unset($pic);
+		
+		$thumbnail = (dirname(dirname(__FILE__))) . '/pictures/'. $username .'/thumbnails/' . Util::getFileNameFromPath($filename);
+		$optimized = (dirname(dirname(__FILE__))) . '/pictures/'. $username .'/optimized/' . Util::getFileNameFromPath($filename);
+		$main = (dirname(dirname(__FILE__))) . '/pictures/'. $username .'/main/' . Util::getFileNameFromPath($filename);
+		
+		$resizer = new ImageResizer($temp);
+		
+		$resizer->resize(80, $thumbnail);
+		$resizer->resize(460, $optimized);
+		$resizer->resize(800, $main);
+		unlink($temp);
+		unset($resizer);
 	}
 	
-	private function saveFileToDB($filepath){
+	
+	
+	public function saveFileToDB($filepath, $userid){
 		 
 		ini_set('exif.encode_unicode', 'UTF-8');
 		error_log($filepath);
@@ -144,19 +160,15 @@ class DropboxService {
 			$picture->longitude = "";
 			$dao = new PictureDAO();
 			 
-			if (isset($_SESSION['name'])) {
-				$userid = $_SESSION["userid"];
-				$dayId = $dao->createDay($userid, $timetaken);
-				$dao->savePicture($dayId, $picture);
-			} else {
-				error_log("COULD NOT SAVE PICTURES, NO USER IN SESSION!!!");
-				unlink($filepath);
-			}
+
+			$dayId = $dao->createDay($userid, $timetaken);
+			$dao->savePicture($dayId, $picture);
+			error_log("File saved successfully.");
 			//unlink($filepath);
 			 
 		} catch (Exception $e3){
 			print "Error!: " . $e3->getMessage() . "<br/>";
-			unlink($filepath);
+			//unlink($filepath);
 		}
 	}
 }

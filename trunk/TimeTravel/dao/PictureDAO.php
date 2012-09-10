@@ -328,7 +328,7 @@ class PictureDAO {
 		return $result;
 	}
 	
-	public function isPictureForUserExisting($userid, $filename){
+	public function isPictureForUserExistingByFile($userid, $filename){
 		$result = false;
 		try {
 			$con = new PDO(GlobalConfig::db_pdo_connect_string, GlobalConfig::db_username, GlobalConfig::db_password);
