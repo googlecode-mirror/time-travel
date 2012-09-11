@@ -10,19 +10,19 @@ dirToSync = '<?php echo (isset($_GET['action']) && ($_GET['action']=="syncDir"))
 
 $(document).ready(function(){
 	$("button").button();
-	
+
 	if (lastFile == "none"){
 		var fileToSync = $(".syncFile:first").val();
 		$("#contentArea1").load("includes/fetchDropboxFile.php?filename="+fileToSync, function(){
-			$("#contentArea1").load("includes/dropboxSetup.php?action=syncDir&dir="+dirToSync+"&lastFile="+fileToSync);
+			$("#contentArea1").load("includes/dropboxSetup.php?action=syncDir&dir="+ encodeURIComponent(dirToSync)+"&lastFile="+encodeURIComponent(fileToSync));
 		});
 	} else if (lastFile != "") {
 		 currentFile = $(".syncFile[value='"+ lastFile +"']");
 		 $(currentFile).attr('checked','checked');
 		 nextFile = $(currentFile).parent().next().find(".syncFile").val();
 		// checkAllPreviousFiles($(currentFile).val());
-		 $("#contentArea1").load("includes/fetchDropboxFile.php?filename="+nextFile, function(){
-				$("#contentArea1").load("includes/dropboxSetup.php?action=syncDir&dir="+dirToSync+"&lastFile="+nextFile);
+		 $("#contentArea1").load("includes/fetchDropboxFile.php?filename="+encodeURIComponent(nextFile), function(){
+				$("#contentArea1").load("includes/dropboxSetup.php?action=syncDir&dir="+encodeURIComponent(dirToSync)+"&lastFile="+encodeURIComponent(nextFile));
 		});
 	}
 
@@ -41,7 +41,7 @@ function loadRootDir(){
 }
 
 function loadDirectory(dir){
-	$("#contentArea1").load("includes/dropboxSetup.php?action=loadDir&dir="+dir);
+	$("#contentArea1").load("includes/dropboxSetup.php?action=loadDir&dir="+encodeURIComponent(dir));
 }
 
 function enableSubmitBtn(){
@@ -50,7 +50,7 @@ function enableSubmitBtn(){
 
 function syncSelectedDir(){
 	dirToSync = $("#folderList input:radio:checked").val();
-	$("#contentArea1").load("includes/dropboxSetup.php?action=syncDir&dir="+dirToSync+"&lastFile=none");
+	$("#contentArea1").load("includes/dropboxSetup.php?action=syncDir&dir="+encodeURIComponent(dirToSync)+"&lastFile=none");
 }
 </script>
 
