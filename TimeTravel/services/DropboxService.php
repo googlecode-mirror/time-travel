@@ -1,6 +1,6 @@
 <?php
-require_once(dirname(dirname(__FILE__)) .'/util.php');
 require_once(dirname(dirname(__FILE__)) .'/bootstrap.php');
+require_once(dirname(dirname(__FILE__)) .'/util.php');
 require_once(dirname(dirname(__FILE__)) .'/viewbean/DropboxFile.php');
 require_once(dirname(dirname(__FILE__)) .'/viewbean/Picture.php');
 require_once(dirname(dirname(__FILE__)) .'/dao/PictureDAO.php');
@@ -36,6 +36,7 @@ class DropboxService {
 
 
 	function readDirContents($main, $dropbox){
+		
 		$fileList = array();
 		
 		if ($main == "root"){

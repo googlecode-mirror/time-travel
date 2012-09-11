@@ -1,10 +1,31 @@
 <?php 
-require_once(dirname(dirname(__FILE__)) .'/bootstrap.php');
 require_once(dirname(dirname(__FILE__)) .'/util.php');
 require_once(dirname(dirname(__FILE__)) .'/services/DropboxService.php');
-require_once(dirname(dirname(__FILE__)) .'/viewbean/DropboxFile.php');
+require_once(dirname(dirname(__FILE__)) .'/viewbean/DropboxFile.php');\
+
+error_reporting(E_ERROR | E_PARSE);
+session_start();
+
+
+if ($_SESSION["dropbox"] == "authenticated"){
+	require_once(dirname(dirname(__FILE__)) .'/bootstrap.php');
+	$OAuth = new \Dropbox\OAuth\Consumer\Curl($key, $secret, $storage, $callback);
+	$dropbox = new \Dropbox\API($OAuth);
+}
 ?>
 <script type="text/javascript">
+<?php 
+		$action = "";
+		if (isset($_GET["action"])){
+			$action = $_GET["action"];
+		} else {
+			
+		}
+		$service = new DropboxService();
+
+	?>
+
+params.action = '<?php echo $action?>';
 var lastFile = '<?php echo isset($_GET['lastFile']) ? $_GET['lastFile'] : ""?>';
 dirToSync = '<?php echo (isset($_GET['action']) && ($_GET['action']=="syncDir")) ? $_GET['dir'] : ""?>';
 
@@ -21,12 +42,16 @@ $(document).ready(function(){
 		 $(currentFile).attr('checked','checked');
 		 nextFile = $(currentFile).parent().next().find(".syncFile").val();
 		// checkAllPreviousFiles($(currentFile).val());
-		 $("#contentArea1").load("includes/fetchDropboxFile.php?filename="+encodeURIComponent(nextFile), function(){
-				$("#contentArea1").load("includes/dropboxSetup.php?action=syncDir&dir="+encodeURIComponent(dirToSync)+"&lastFile="+encodeURIComponent(nextFile));
-		});
+		if (nextFile != undefined){
+			 $("#contentArea1").load("includes/fetchDropboxFile.php?filename="+encodeURIComponent(nextFile), function(){
+					$("#contentArea1").load("includes/dropboxSetup.php?action=syncDir&dir="+encodeURIComponent(dirToSync)+"&lastFile="+encodeURIComponent(nextFile));
+			});
+		}
 	}
 
+	
 });
+
 
 function checkAllPreviousFiles(currentFile){
 	if (currentFile == $(".syncFile:first").val()) return;
@@ -54,19 +79,6 @@ function syncSelectedDir(){
 }
 </script>
 
-<?php 
-	
-	$OAuth = new \Dropbox\OAuth\Consumer\Curl($key, $secret, $storage, $callback);
-	$dropbox = new \Dropbox\API($OAuth);
-
-
-	$action = "";
-	if (isset($_GET["action"])){
-		$action = $_GET["action"];
-	}
-	$service = new DropboxService();
-
-?>
 <div>
 	<img src="/images/gmail.png" width="80"></img>
 </div>
@@ -128,3 +140,4 @@ if ($action == "syncDir"){
 <button id="cancelBtn" onclick="cancelSync();">Cancel</button>
 <?php }?>
 </div>
+<div id="msgDlg"></div>
