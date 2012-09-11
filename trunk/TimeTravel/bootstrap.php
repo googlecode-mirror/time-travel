@@ -46,3 +46,7 @@ $storage = new \Dropbox\OAuth\Storage\Session($encrypter);
 
 $OAuth = new \Dropbox\OAuth\Consumer\Curl($key, $secret, $storage, $callback);
 $dropbox = new \Dropbox\API($OAuth);
+
+error_reporting(E_ERROR | E_PARSE);
+session_start();
+$_SESSION["dropbox"] = "authenticated";

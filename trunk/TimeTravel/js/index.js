@@ -32,15 +32,15 @@ $(document).ready(function() {
 		loadCallContent(); 
 	} else if (params.mainContentType == "dropbox"){
 		loadDropbox(); 
+	} else if (params.mainContentType == "dropboxAuthenticated"){
+		$("#contentArea1").load("includes/dropboxSetup.php");
 	}else {
 		loadPictures();
 	}
 });
 
 function loadDropbox(){
-	$("#contentArea1").load("includes/dropboxSetup.php", function(){
-		//updateDatePicker();
-	});
+	window.location = "includes/dropboxAuth.php";
 }
 
 function loadCallContent(){

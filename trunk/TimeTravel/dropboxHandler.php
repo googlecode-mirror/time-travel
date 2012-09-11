@@ -2,8 +2,6 @@
 require_once('bootstrap.php');
 require_once ('/services/DropboxService.php');
 
-$OAuth = new \Dropbox\OAuth\Consumer\Curl($key, $secret, $storage, $callback);
-$dropbox = new \Dropbox\API($OAuth);
 
 // Retrieve the account information
 $accountInfo = $dropbox->metaData();
