@@ -11,10 +11,7 @@
 	
 	date_default_timezone_set('Africa/Johannesburg');
 ?>
-
-<script type="text/javascript" src="/js/vendor/jquery.aw-showcase.min.js"></script>
-<link rel="stylesheet" href="../css/scroller.css" />
-<script>
+<script type="text/javascript">
 $(document).ready(function()	{
 		$("#timeSelectorDiv").html($("#timeSelector").html());
 
@@ -24,13 +21,13 @@ $(document).ready(function()	{
 		
 		$("#pictureDate").html($.datepicker.formatDate('yy-mm-dd', new Date()));
 
-		doShowCase();
+		//doShowCase();
 		$("button").button();
 
 
-		hideShowCaseButtons($("#showcase"));
+		//hideShowCaseButtons($("#showcase"));
 		showLoading(false);
-		loadFirstPic();
+		//loadFirstPic();
 		//LoadAllimages();
 
 		$("#picCaptionOverlay").dialog( {
@@ -86,6 +83,8 @@ $(document).ready(function()	{
 		$("#smsAccordion").accordion({ autoHeight: true, clearStyle: true });
 		$("#emailAccordion").accordion({ autoHeight: true, clearStyle: true });
 		$("#callAccordion").accordion({ autoHeight: true, clearStyle: true });
+
+		$(".ad-preloads").hide();
 });
 
 function doChangePictureDate(){
@@ -453,7 +452,7 @@ function showEmail(id){
 				$statusUpdateFound = true;
 			}
 			
-			$picturesFound = false;
+			$picturesFound = (sizeof($pictures) >  0);
 			
 		?>
 		
@@ -464,70 +463,15 @@ function showEmail(id){
 			});
 		</script>
 			
-			<!--  <img src="showimage.php?image_id=<?php echo $picture->id; ?>" alt="Image from DB" width="100%"/> -->
-		<div style="width: 400;">
+
+	<?php 
 	
-			<div id="showcase" class="showcase">
-				
-				<?php
-				foreach($pictures as $picture){
-					$picturesFound = true;
-					if ( $picture->sharerUsername == ""){
-						$pictureIsShared = false;
-						$pictureFolder = $username;
-					} else{
-						$pictureIsShared = true;
-						$pictureFolder = $picture->sharerUsername;
-					}
-					
-					$pictureSrc =  '/pictures/'. $pictureFolder.'/optimized/'.$picture->filename;
-					$mainPicUrl =  '/pictures/'.$pictureFolder.'/main/'.$picture->filename;
-					$pictureDescription = ($picture->description == "" ? "" : "\""). $picture->description . ($picture->description == "" ? "" : "\"");
-					//$pictureDescription = $pictureIsShared ? ("Shared to you by '".($securityService->getUserByUsername($picture->sharerUsername)->name))."'" : $pictureDescription;
-				?>
-				<!-- Each child div in #showcase represents a slide -->
-				<div class="showcase-slide">
-					<!-- Put the slide content in a div with the class .showcase-content. -->
-					<div class="showcase-content">
-						<input id="pictureId" type="hidden" value="<?php echo$picture->id ?>"/>
-						<input id="pictureSrc" type="hidden" value="<?php echo$pictureSrc?>"/>
-						<input id="mainPicUrl" type="hidden" value="<?php echo$mainPicUrl?>"/>
-						<a id="<?php echo$picture->id ?>" filename="<?php echo$picture->filename?>" href="#" onclick="loadMainImage(this);"><img id="<?php echo$picture->id ?>" src="/images/loading.gif" width="60" style="position: relative; top: 120px;"/></a>
-					</div>
-					<!-- Put the caption content in a div with the class .showcase-caption -->
-					<div class="showcase-caption" style="width: 430px; left: 0px;">
-						<div class="picDescription" style="float: left"><?php echo $pictureDescription ?></div>
-						
-						<div style="font-size: 0.7em; text-align: right; float: right;"><?php echo date("Y F j l g:i a", strtotime($picture->timetaken))?></div>
-					</div>
-				</div>
-		
-		<?php }?>
-		
-		</div>
-				
-		</div>
-				
-		<?php
-			if ($picturesFound) {
-				$pictureTime = date("g:i a", strtotime($picture->timetaken));
-				$pictureIsShared = isset($picture->sharerUsername) ? true : false;
-			
-		?>
-				
-		 
-		<!-- <div class="formlabel" style="display: <?php echo$picturesFound? "none" : "block"; ?>;">No Pictures taken on this day.</div>  -->
-		<div class="ui-state-default" style="height: 30px; display: <?php echo $pictureIsShared ? "block" : "none"?>; ?>;"><span style="top: 5px; position: relative;"><?php echo ("Shared to you by '".($securityService->getUserByUsername($picture->sharerUsername)->name))."'" ?></span></div>
-		<div class="ui-datepicker-inline ui-widget ui-widget-content ui-helper-clearfix" style="padding-top: 5px; position: relative; left: 0px; width:450px; display: <?php echo $pictureIsShared ? "none" : "block"?>; ?>;">
-			<a href="#" onclick="callPictureRotate('left');" title="Rotate picture left"><img src="/images/rotate-left.png"width="22"/></a>&nbsp;&nbsp;
-			<a href="#" onclick="callPictureRotate('right');" title="Rotate picture right"><img src="/images/rotate-right.png"width="22"/></a>&nbsp;&nbsp;
-			<a href="#" onclick="showCaptionOverlay();" title="Edit caption"><img src="/images/comment.png"width="22"/></a>&nbsp;&nbsp;
-			<a href="#" onclick="showDateTakenOverlay();" title="Edit picture date"><img src="/images/calendar.png"width="22"/></a>&nbsp;&nbsp;
-			<a href="#" onclick="showPictureShareOverlay();" title="Share pictures"><img src="/images/share.png"width="22"/></a>
-		</div>
-		<br/><br/>
-		
-		<?php }?>
+		if ($picturesFound){
+	
+			include_once(dirname(dirname(__FILE__)) .'/includes/displayPictures.php');
+	
+		}
+	?>
 		
 		<!-- STATUS UPDATES -->
 		<?php if ($statusUpdateFound) {
@@ -539,8 +483,8 @@ function showEmail(id){
 		</div>
 		
 		<?php }?>
+			
 		
-	
 		<!--GEO LOCATIONS -->
 		<?php 
 			$locationDAO = new LocationDAO();
