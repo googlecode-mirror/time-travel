@@ -42,7 +42,7 @@ $(document).ready(function(){
 		 $(currentFile).attr('checked','checked');
 		 nextFile = $(currentFile).parent().next().find(".syncFile").val();
 		// checkAllPreviousFiles($(currentFile).val());
-		if (nextFile != undefined){
+		if ($(currentFile).parent().next().find(".syncFile").size() > 0){
 			 $("#contentArea1").load("includes/fetchDropboxFile.php?filename="+encodeURIComponent(nextFile), function(){
 					$("#contentArea1").load("includes/dropboxSetup.php?action=syncDir&dir="+encodeURIComponent(dirToSync)+"&lastFile="+encodeURIComponent(nextFile));
 			});
