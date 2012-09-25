@@ -41,7 +41,7 @@ class LocationDAO {
 		$itemslist = array();
 		try {
 
-			$today = self::$dayDAO->getDateForDayId($_SESSION["userid"], $dayId);
+			/* $today = self::$dayDAO->getDateForDayId($_SESSION["userid"], $dayId);
 			$yesterdayDate = date('Y-m-d', mktime(0,0,0,date("m", strtotime($today)),date("d", strtotime($today))-1,date("Y", strtotime($today))));
 			error_log("YESTERDAY: ".$yesterdayDate);
 			$yesterdayId = self::$dayDAO->getIdForDay($_SESSION["userid"], $yesterdayDate);
@@ -55,7 +55,7 @@ class LocationDAO {
 						array_push($itemslist, $location);
 					}
 				}
-			}
+			} */
 
 
 			$stmt = self::$con->prepare("select * from location where dayid=:dayid order by theTimestamp");
